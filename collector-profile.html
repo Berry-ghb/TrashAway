@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collector Profile | TrashAway</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="firebase.js"></script>
+    <style>
+        /* Collector accent color override */
+        body:not(.dark-theme) {
+            --primary: #d97706;
+            --primary-dark: #b45309;
+            --primary-glow: rgba(217, 119, 6, 0.25);
+            --primary-light: rgba(217, 119, 6, 0.08);
+        }
+        body.dark-theme {
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --primary-glow: rgba(245, 158, 11, 0.3);
+            --primary-light: rgba(245, 158, 11, 0.08);
+        }
+
+        .profile-avatar-wrap {
+            position: relative; display: inline-block;
+        }
+        .avatar-circle {
+            width: 88px; height: 88px; border-radius: 50%;
+            background: var(--primary); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 32px; font-weight: 900; color: #fff;
+            border: 3px solid var(--glass-border);
+        }
+        .avatar-edit-btn {
+            position: absolute; bottom: 0; right: 0;
+            width: 30px; height: 30px; border-radius: 50%;
+            background: var(--primary); border: 2px solid var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+        }
+        .avatar-edit-btn svg { width: 13px; height: 13px; }
+
+        .section-heading {
+            font-size: 13px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.8px; color: var(--primary);
+            margin-bottom: 18px; margin-top: 32px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-heading::after {
+            content: ''; flex: 1; height: 1px;
+            background: var(--glass-border);
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .badge-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--primary-light); border: 1px solid rgba(217,119,6,0.25);
+            color: var(--primary); padding: 5px 14px; border-radius: 50px;
+            font-size: 12px; font-weight: 800;
+        }
+
+        select.input-field {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        .save-toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+            background: var(--primary); color: #fff; padding: 14px 28px;
+            border-radius: 50px; font-weight: 800; font-size: 14px;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 8px 24px var(--primary-glow);
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 9999;
+        }
+        .save-toast.show { transform: translateX(-50%) translateY(0); }
+
+        .badge-section {
+            display: inline-block;
+            background: var(--primary-light);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .truck-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin: 20px 0;
+        }
+
+        .truck-stat-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .truck-stat-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+
+        .truck-stat-card strong {
+            display: block;
+            font-size: 24px;
+            color: var(--primary);
+            margin: 8px 0;
+        }
+
+        .truck-stat-card span {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+            .profile-grid { grid-template-columns: 1fr !important; }
+            .truck-stats { grid-template-columns: 1fr; }
+        }
+    </style>
+
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="user"></i></div>
+
+    <div class="save-toast" id="toast">
+        <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
+        Profile updated successfully!
+    </div>
+
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+        <i data-lucide="menu"></i>
+    </button>
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <a href="collector-dashboard.html" class="sidebar-logo">
+                <img src="image.png" alt="TrashAway Logo">
+                <span>TrashAway</span>
+            </a>
+
+            <div style="margin-bottom: 20px;">
+                <span class="collector-badge"><i data-lucide="truck" style="width:12px; height:12px;"></i> Collector Portal</span>
+            </div>
+
+            <nav>
+                <a href="collector-dashboard.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i> Overview
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="clipboard-list"></i> Job Requests
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="map-pin"></i> My Route
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="banknote"></i> Earnings
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="bar-chart-2"></i> Reports
+                </a>
+                <a href="collector-profile.html" class="nav-item active">
+                    <i data-lucide="settings"></i> Company Profile
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar" style="background: var(--primary);">G</div>
+                    <div class="sidebar-user-info">
+                        <strong>GreenMove Ltd</strong>
+                        <span>Verified Collector</span>
+                    </div>
+                </div>
+                <button onclick="logout()" class="btn-pill" style="width: 100%; margin-top: 14px; background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.3); color: #dc2626;">Log Out</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="dash-header">
+                <h1>Company Profile</h1>
+                <span class="badge-badge"><i data-lucide="verified" style="width:13px; height:13px;"></i> Verified Collector</span>
+            </div>
+
+            <div class="glass-panel">
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 8px; flex-wrap: wrap;">
+                    <div class="profile-avatar-wrap">
+                        <div class="avatar-circle" id="avatar-letter">G</div>
+                        <button class="avatar-edit-btn" title="Change logo">
+                            <i data-lucide="camera"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <h2 style="font-size: 22px; font-weight: 900; color: var(--text);" id="display-name">GreenMove Ltd</h2>
+                        <p style="opacity: 0.7; margin-top: 4px;" id="display-email">contact@greenmove.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
+                    <i data-lucide="briefcase" style="color: var(--primary);"></i>
+                    <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">Company Information</h3>
+                </div>
+
+                <div class="profile-grid">
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        <input type="text" class="input-field" value="GreenMove Ltd" id="company-name">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Person</label>
+                        <input type="text" class="input-field" value="Kunle Fashola" id="contact-name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" class="input-field" value="contact@greenmove.com" id="email">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" class="input-field" value="+234 803 456 7890" id="phone">
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Trucks</label>
+                        <select class="input-field" id="trucks">
+                            <option value="1">1</option>
+                            <option value="2 - 5">2 - 5</option>
+                            <option value="6 - 10">6 - 10</option>
+                            <option value="10+">10+</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Service State</label>
+                        <select class="input-field" id="service-state">
+                            <option value="" disabled>Select state</option>
+                            <option>Abia</option>
+                            <option>Adamawa</option>
+                            <option>Akwa Ibom</option>
+                            <option>Anambra</option>
+                            <option>Bauchi</option>
+                            <option>Bayelsa</option>
+                            <option>Benue</option>
+                            <option>Borno</option>
+                            <option>Cross River</option>
+                            <option>Delta</option>
+                            <option>Ebonyi</option>
+                            <option>Edo</option>
+                            <option>Ekiti</option>
+                            <option>Enugu</option>
+                            <option>FCT (Abuja)</option>
+                            <option>Gombe</option>
+                            <option>Imo</option>
+                            <option>Jigawa</option>
+                            <option>Kaduna</option>
+                            <option>Kano</option>
+                            <option>Katsina</option>
+                            <option>Kebbi</option>
+                            <option>Kogi</option>
+                            <option>Kwara</option>
+                            <option>Lagos</option>
+                            <option>Nasarawa</option>
+                            <option>Niger</option>
+                            <option>Ogun</option>
+                            <option>Ondo</option>
+                            <option>Osun</option>
+                            <option>Oyo</option>
+                            <option>Plateau</option>
+                            <option>Rivers</option>
+                            <option>Sokoto</option>
+                            <option>Taraba</option>
+                            <option>Yobe</option>
+                            <option>Zamfara</option>
+                            <option>Multiple States</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>CAC Registration Number</label>
+                        <input type="text" class="input-field" value="RC1234567" id="cac">
+                    </div>
+                    <div class="form-group">
+                        <label>Years in Operation</label>
+                        <input type="number" class="input-field" value="3" id="years">
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <label>Company Address</label>
+                    <textarea class="input-field" rows="3" id="address">123 Waste Management Street, Bodija, Ibadan, Oyo State, Nigeria</textarea>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
+                    <i data-lucide="truck" style="color: var(--primary);"></i>
+                    <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">Fleet Information</h3>
+                </div>
+
+                <div class="truck-stats">
+                    <div class="truck-stat-card">
+                        <span>Active Trucks</span>
+                        <strong>3</strong>
+                        <input type="number" class="input-field" value="3" style="margin-top: 8px;">
+                    </div>
+                    <div class="truck-stat-card">
+                        <span>Total Trucks</span>
+                        <strong>4</strong>
+                        <input type="number" class="input-field" value="4" style="margin-top: 8px;">
+                    </div>
+                    <div class="truck-stat-card">
+                        <span>Avg Capacity (Tons)</span>
+                        <strong>8</strong>
+                        <input type="number" class="input-field" value="8" style="margin-top: 8px;">
+                    </div>
+                    <div class="truck-stat-card">
+                        <span>Daily Routes</span>
+                        <strong>12</strong>
+                        <input type="number" class="input-field" value="12" style="margin-top: 8px;">
+                    </div>
+                </div>
+
+                <div class="profile-grid" style="margin-top: 24px;">
+                    <div class="form-group">
+                        <label>Truck License Class</label>
+                        <select class="input-field" id="license">
+                            <option>Class A</option>
+                            <option>Class B</option>
+                            <option>Class C</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Insurance Provider</label>
+                        <input type="text" class="input-field" value="AXA Insurance" id="insurance">
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
+                    <i data-lucide="award" style="color: var(--primary);"></i>
+                    <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">Performance & Rating</h3>
+                </div>
+
+                <div class="profile-grid">
+                    <div class="form-group">
+                        <label>Current Rating</label>
+                        <div style="padding: 12px; background: var(--glass); border-radius: 10px; border: 1px solid var(--glass-border); font-weight: 800; color: var(--primary); font-size: 18px;">
+                            ⭐ 4.8 / 5.0
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Completed Pickups</label>
+                        <div style="padding: 12px; background: var(--glass); border-radius: 10px; border: 1px solid var(--glass-border); font-weight: 800; color: var(--primary); font-size: 18px;">
+                            247 Pickups
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Earnings</label>
+                        <div style="padding: 12px; background: var(--glass); border-radius: 10px; border: 1px solid var(--glass-border); font-weight: 800; color: var(--primary); font-size: 18px;">
+                            ₦84,500
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>On-time Delivery Rate</label>
+                        <div style="padding: 12px; background: var(--glass); border-radius: 10px; border: 1px solid var(--glass-border); font-weight: 800; color: var(--primary); font-size: 18px;">
+                            98.5%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
+                    <i data-lucide="lock" style="color: var(--primary);"></i>
+                    <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">Security & Verification</h3>
+                </div>
+
+                <div class="profile-grid">
+                    <div class="form-group">
+                        <label>Company Registration Certificate</label>
+                        <button class="btn-pill" style="width: 100%; padding: 12px 20px;">
+                            <i data-lucide="upload" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+                            Upload Certificate
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label>Environmental Compliance</label>
+                        <button class="btn-pill" style="width: 100%; padding: 12px 20px;">
+                            <i data-lucide="upload" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+                            Upload License
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
+                    <i data-lucide="key" style="color: var(--primary);"></i>
+                    <h3 style="color: var(--primary); font-size: 18px; font-weight: 800;">Account Security</h3>
+                </div>
+
+                <div class="profile-grid">
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" class="input-field" placeholder="••••••••" id="current-pass">
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" class="input-field" placeholder="Leave blank to keep current" id="new-pass">
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+                    <button class="btn-pill" onclick="saveProfile()" style="padding: 16px 40px; font-size: 15px;">
+                        <i data-lucide="save" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+                        Save Changes
+                    </button>
+                    <button class="btn-outline" onclick="cancelEdit()" style="padding: 16px 40px; font-size: 15px;">
+                        <i data-lucide="x" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="border: 2px solid rgba(255, 59, 48, 0.3); margin-top: 40px;">
+                <h3 style="color: #ff3b30; font-size: 18px; font-weight: 800; margin-bottom: 16px;">Danger Zone</h3>
+                <p style="opacity: 0.7; margin-bottom: 20px;">Permanently delete your collector account and all associated data. This action cannot be undone.</p>
+                <button class="btn-ghost" style="background: #ff3b30; border: 2px solid #ff3b30; color: white; padding: 14px 30px;">
+                    <i data-lucide="trash-2" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+                    Delete Company Account
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        lucide.createIcons();
+
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        document.querySelectorAll('a, button, input, select, textarea, .btn-pill, .nav-item, .glass-panel, .sidebar-logo').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
+                cursor.style.filter = 'drop-shadow(0 0 18px var(--primary-glow))';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.filter = 'drop-shadow(0 0 10px var(--primary-glow))';
+            });
+        });
+
+        // Enforce light theme
+        document.body.classList.add('light-theme');
+        lucide.createIcons();
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('open');
+        }
+
+        async function saveProfile() {
+            if (!auth.currentUser) {
+                alert('Please log in to update your profile.');
+                return;
+            }
+
+            const companyName = document.getElementById('company-name').value.trim();
+            const contactName = document.getElementById('contact-name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const trucks = document.getElementById('trucks').value;
+            const serviceState = document.getElementById('service-state').value;
+            const cac = document.getElementById('cac').value.trim();
+            const address = document.getElementById('address').value.trim();
+
+            try {
+                // Update Firestore document
+                await updateDoc(doc(db, 'collectors', auth.currentUser.uid), {
+                    companyName,
+                    contactName,
+                    email,
+                    phone,
+                    trucks,
+                    serviceState,
+                    cac,
+                    address,
+                    updatedAt: new Date()
+                });
+
+                // Update display
+                document.getElementById('display-name').textContent = companyName;
+                document.getElementById('display-email').textContent = email;
+                document.getElementById('avatar-letter').textContent = companyName.charAt(0).toUpperCase();
+
+                // Show success toast
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                lucide.createIcons();
+                setTimeout(() => toast.classList.remove('show'), 3200);
+
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Failed to update profile. Please try again.');
+            }
+        }
+
+        function cancelEdit() {
+            window.location.href = 'collector-dashboard.html';
+        }
+
+        // Load profile data on page load
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(db, 'collectors', user.uid));
+                    if (userDoc.exists()) {
+                        const profile = userDoc.data();
+                        
+                        document.getElementById('company-name').value = profile.companyName || '';
+                        document.getElementById('contact-name').value = profile.contactName || '';
+                        document.getElementById('email').value = profile.email || '';
+                        document.getElementById('phone').value = profile.phone || '';
+                        document.getElementById('trucks').value = profile.trucks || '1';
+                        document.getElementById('service-state').value = profile.serviceState || '';
+                        document.getElementById('cac').value = profile.cac || '';
+                        document.getElementById('address').value = profile.address || '';
+
+                        // Update display
+                        document.getElementById('display-name').textContent = profile.companyName || '';
+                        document.getElementById('display-email').textContent = profile.email || '';
+                        document.getElementById('avatar-letter').textContent = (profile.companyName || 'C').charAt(0).toUpperCase();
+                    }
+                } catch (error) {
+                    console.error('Error loading profile:', error);
+                }
+            } else {
+                // Redirect to login if not authenticated
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function logout() {
+            try {
+                await signOut(auth);
+                localStorage.removeItem('trashaway-user-role');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Failed to log out. Please try again.');
+            }
+        }
+
+        // Make functions global
+        window.saveProfile = saveProfile;
+        window.cancelEdit = cancelEdit;
+        window.toggleSidebar = toggleSidebar;
+        window.logout = logout;
+    </script>
+
+</body>
+</html>

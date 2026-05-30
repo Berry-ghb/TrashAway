@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collector Dashboard | TrashAway</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="app-utils.js"></script>
+    <style>
+        /* ── Collector accent colours ── */
+        body:not(.dark-theme) {
+            --primary: #d97706;
+            --primary-dark: #b45309;
+            --primary-glow: rgba(217, 119, 6, 0.25);
+            --primary-light: rgba(217, 119, 6, 0.08);
+        }
+        body.dark-theme {
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --primary-glow: rgba(245, 158, 11, 0.3);
+            --primary-light: rgba(245, 158, 11, 0.08);
+        }
+
+        /* ── Earnings card ── */
+        .earnings-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 24px; padding: 28px;
+            color: #fff; position: relative; overflow: hidden;
+        }
+        .earnings-card::after {
+            content: ''; position: absolute;
+            top: -30px; right: -30px;
+            width: 140px; height: 140px; border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+        }
+        .earnings-card h4 { opacity: 0.85; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .earnings-card h2 { font-size: clamp(28px, 4vw, 38px); font-weight: 900; letter-spacing: -1px; }
+        .earnings-card p { opacity: 0.8; font-size: 13px; margin-top: 6px; }
+
+        /* ── HAMBURGER: hidden on desktop, visible on mobile ── */
+        .hamburger { display: none !important; }
+        @media (max-width: 768px) {
+            .hamburger { display: flex !important; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0 !important; }
+        }
+
+        /* ── Stats grids ── */
+        .top-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 32px; }
+        .mid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 32px; }
+        @media (max-width: 900px) {
+            .top-grid { grid-template-columns: 1fr 1fr; }
+            .top-grid .earnings-card { grid-column: span 2; }
+        }
+        @media (max-width: 560px) {
+            .top-grid { grid-template-columns: 1fr; }
+            .top-grid .earnings-card { grid-column: span 1; }
+            .mid-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="truck"></i></div>
+
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+    <i data-lucide="menu"></i>
+</button>
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="dashboard-container">
+    <aside class="sidebar" id="sidebar">
+        <a href="collector-dashboard.html" class="sidebar-logo">
+            <img src="image.png" alt="TrashAway Logo">
+            <span>TrashAway</span>
+        </a>
+
+        <div style="margin-bottom: 20px;">
+            <span class="collector-badge"><i data-lucide="truck" style="width:12px; height:12px;"></i> Collector Portal</span>
+        </div>
+
+        <nav>
+            <a href="collector-dashboard.html" class="nav-item active">
+                <i data-lucide="layout-dashboard"></i> Overview
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="clipboard-list"></i> Job Requests
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="map-pin"></i> My Route
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="banknote"></i> Earnings
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="bar-chart-2"></i> Reports
+            </a>
+            <a href="collector-profile.html" class="nav-item">
+                <i data-lucide="settings"></i> Company Profile
+            </a>
+            <a href="contact-us.html" class="nav-item">
+                <i data-lucide="help-circle"></i> Support
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" style="background: var(--primary);">G</div>
+                <div class="sidebar-user-info">
+                    <strong>GreenMove Ltd</strong>
+                    <span>Verified Collector</span>
+                </div>
+            </div>
+            <button class="btn-pill logout-btn" onclick="logout('index.html')" style="width:100%; margin-top: 18px;">Sign Out</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="dash-header">
+            <div>
+                <h2 id="collector-greeting" style="font-size: clamp(24px, 3.5vw, 32px); margin: 0; color: var(--primary);">Good morning</h2>
+                <p style="color: var(--text-muted); font-size: 13px; font-weight: 600; margin-top: 8px;">Manage active jobs, revenue, and your fleet in one place.</p>
+            </div>
+        </div>
+
+        <!-- EARNINGS HERO + STATS -->
+        <div class="top-grid">
+            <div class="earnings-card">
+                <h4>This Month's Earnings</h4>
+                <h2>₦84,500</h2>
+                <p>↑ 12% vs last month</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="package-check"></i></div>
+                <h4>Jobs Completed</h4>
+                <h3>38</h3>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="clock"></i></div>
+                <h4>Pending Jobs</h4>
+                <h3 id="pending-jobs-count">0</h3>
+            </div>
+        </div>
+
+        <div class="mid-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="star"></i></div>
+                <h4>Rating</h4>
+                <h3>4.8 ★</h3>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="truck"></i></div>
+                <h4>Active Trucks</h4>
+                <h3>3 / 4</h3>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                <div>
+                    <p style="font-size: 12px; letter-spacing: 0.6px; margin-bottom: 6px; color: var(--text-muted);">SERVICE AREA</p>
+                    <strong id="collector-service-area" style="font-size: 18px; color: var(--text);">Your active route</strong>
+                </div>
+                <span class="activity-badge status-pending" style="min-width: auto;">Live</span>
+            </div>
+            <p id="collector-summary" style="margin-top: 14px; color: var(--text-muted); line-height: 1.7;">Accept pending requests to assign them to your fleet.</p>
+        </div>
+
+        <!-- JOB REQUESTS -->
+        <div class="glass-panel">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 12px;">
+                <h3 style="color: var(--text); font-size: 18px; font-weight: 800;">Incoming Job Requests</h3>
+                <span id="incoming-count" style="font-size: 13px; color: var(--text-muted);">0 new requests</span>
+            </div>
+            <div id="job-requests"></div>
+        </div>
+    </main>
+</div>
+
+<script type="module">
+    import { auth, db } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { collection, query, where, onSnapshot, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { logout } from './app-utils.js';
+
+    function getTimeGreeting() {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return 'Good Morning';
+        if (hour >= 12 && hour < 17) return 'Good Afternoon';
+        if (hour >= 17 && hour < 21) return 'Good Evening';
+        return 'Good Night';
+    }
+
+    const initialGreeting = document.getElementById('collector-greeting');
+    if (initialGreeting) {
+        initialGreeting.textContent = getTimeGreeting();
+    }
+
+    lucide.createIcons();
+
+    let collectorProfile = null;
+
+    const cursor = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+
+    // Cursor reactivity
+    document.querySelectorAll('a, button, .job-card, .stat-card, .nav-item').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
+            cursor.style.filter = 'drop-shadow(0 0 18px var(--primary-glow))';
+        });
+        el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursor.style.filter = 'drop-shadow(0 0 10px var(--primary-glow))';
+        });
+    });
+
+    // Check authentication
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
+            try {
+                const collectorDoc = await getDoc(doc(db, 'collectors', user.uid));
+                if (collectorDoc.exists()) {
+                    collectorProfile = collectorDoc.data();
+                    const companyName = (collectorProfile.companyName || 'there').trim();
+                    document.querySelector('.sidebar-user strong').textContent = companyName || 'Company';
+                    document.querySelector('.sidebar-avatar').textContent = (companyName || 'C').charAt(0).toUpperCase();
+                    const greeting = document.getElementById('collector-greeting');
+                    if (greeting) {
+                        greeting.textContent = `${getTimeGreeting()}, ${companyName}`;
+                    }
+                    const serviceAreaEl = document.getElementById('collector-service-area');
+                    const summaryEl = document.getElementById('collector-summary');
+                    if (serviceAreaEl) {
+                        serviceAreaEl.textContent = collectorProfile.serviceState || 'Your assigned route';
+                    }
+                    if (summaryEl) {
+                        summaryEl.textContent = collectorProfile.serviceState ? `Accept pending requests in ${collectorProfile.serviceState}.` : 'Accept pending requests to assign them to your fleet.';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading collector data:', error);
+            }
+            loadRequests();
+        }
+    });
+
+    function loadRequests() {
+        const q = query(collection(db, 'requests'), where('status', '==', 'pending'));
+        onSnapshot(q, (querySnapshot) => {
+            const requests = [];
+            querySnapshot.forEach((doc) => {
+                requests.push({ id: doc.id, ...doc.data() });
+            });
+            const filteredRequests = filterCollectorRequests(requests);
+            renderRequests(filteredRequests);
+        });
+    }
+
+    function filterCollectorRequests(requests) {
+        if (!collectorProfile) return requests;
+
+        const serviceState = (collectorProfile.serviceState || '').trim().toLowerCase();
+        const serviceCity = (collectorProfile.serviceCity || '').trim().toLowerCase();
+
+        return requests.filter(req => {
+            const requestState = (req.state || '').trim().toLowerCase();
+            const requestCity = (req.city || '').trim().toLowerCase();
+
+            if (serviceState && serviceCity) {
+                return requestState === serviceState && requestCity === serviceCity;
+            }
+            if (serviceState) {
+                return requestState === serviceState;
+            }
+            return true;
+        });
+    }
+
+    function renderRequests(requests) {
+        const container = document.getElementById('job-requests');
+        const countLabel = document.getElementById('incoming-count');
+        const pendingJobsCount = document.getElementById('pending-jobs-count');
+
+        countLabel.textContent = `${requests.length} new request${requests.length === 1 ? '' : 's'}`;
+        pendingJobsCount.textContent = requests.length;
+
+        if (!requests.length) {
+            container.innerHTML = `
+                <div class="job-card" style="justify-content:center; text-align:center; padding: 32px 24px;">
+                    <div style="width: 42px; height: 42px; border-radius: 12px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
+                        <i data-lucide="search" style="color: var(--primary); width: 18px; height: 18px;"></i>
+                    </div>
+                    <div class="job-info">
+                        <strong>No incoming pickups yet</strong>
+                        <span>Requests from users appear here once submitted.</span>
+                    </div>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        requests.forEach(req => {
+            const card = document.createElement('div');
+            card.className = 'job-card';
+            card.innerHTML = `
+                <div class="job-icon">
+                    <i data-lucide="package"></i>
+                </div>
+                <div class="job-info">
+                    <strong>${req.name}</strong>
+                    <span>${req.area}, ${req.city}, ${req.state} • ${req.wasteType} • ${req.bagCount}</span>
+                    <small>${req.pickupDay} at ${req.pickupTime} • ${req.phone}</small>
+                </div>
+                <div class="job-actions">
+                    <button onclick="acceptRequest('${req.id}')" class="btn-pill" style="background: var(--primary); color: #fff; padding: 8px 16px; font-size: 12px;">Accept</button>
+                    <button onclick="viewDetails('${req.id}')" class="btn-pill" style="background: transparent; border: 1px solid var(--glass-border); padding: 8px 16px; font-size: 12px;">Details</button>
+                </div>`;
+            container.appendChild(card);
+        });
+        lucide.createIcons();
+    }
+
+    async function acceptRequest(requestId) {
+        try {
+            await updateDoc(doc(db, 'requests', requestId), {
+                status: 'assigned',
+                assignedTo: auth.currentUser.uid,
+                assignedAt: new Date(),
+                assignedCompanyName: collectorProfile?.companyName || 'Collector',
+                assignedPhone: collectorProfile?.phone || ''
+            });
+            alert('Request accepted! The user will now see the assigned collector and be contacted.');
+        } catch (error) {
+            console.error('Error accepting request:', error);
+            alert('Failed to accept request. Please try again.');
+        }
+    }
+
+    function viewDetails(requestId) {
+        // For now, just alert. Can expand to modal later.
+        alert('View details for request: ' + requestId);
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+
+    // Expose module functions for inline event handlers.
+    window.toggleSidebar = toggleSidebar;
+    window.acceptRequest = acceptRequest;
+    window.viewDetails = viewDetails;
+    window.logout = logout;
+
+</script>
+
+</body>
+</html>

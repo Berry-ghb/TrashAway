@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrashAway | Nigeria's Premium Waste Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="firebase.js"></script>
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="trash-2"></i></div>
+
+    <!-- DYNAMIC ISLAND NAVIGATION -->
+    <div class="nav-container">
+        <nav class="dynamic-island">
+            <div class="island-content">
+                <a href="index.html" class="logo-brand">
+                    <img src="image.png" alt="TrashAway Logo" class="logo-img">
+                </a>
+                <div class="nav-links">
+                    <a href="index.html#features">Features</a>
+                    <a href="how-it-works.html">How It Works</a>
+                    <a href="about-us.html">About Us</a> 
+                    <a href="pricing.html">Pricing</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="contact-us.html">Contact</a>
+                </div>
+                <div class="island-right">
+                    <a href="login.html" class="btn-pill">Login</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- HERO -->
+    <header class="hero">
+        <video autoplay muted loop playsinline class="video-bg">
+            <source src="video.mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <div class="badge">✨ Trusted by 10,000+ Nigerian Homes</div>
+            <h1>Nigeria is<br><span class="text-gradient">Calling.</span></h1>
+            <p class="hero-p">Premium doorstep waste management designed for the modern Nigerian home. Scheduled, verified, and eco-friendly — from Lagos to Kano, Port Harcourt to Abuja.</p>
+            <div class="hero-btns">
+                <a href="signup.html" class="btn-pill btn-large">Get Started Now</a>
+                <a href="#process" class="btn-pill btn-large btn-outline">How it Works</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- TRUST BAR -->
+    <div class="trust-bar reveal">
+        <div class="trust-item">
+            <i data-lucide="users"></i>
+            <div><div class="trust-num">10,000+</div>Homes Served</div>
+        </div>
+        <div class="trust-item">
+            <i data-lucide="truck"></i>
+            <div><div class="trust-num">50,000+</div>Pickups Done</div>
+        </div>
+        <div class="trust-item">
+            <i data-lucide="leaf"></i>
+            <div><div class="trust-num">80%</div>Waste Recycled</div>
+        </div>
+        <div class="trust-item">
+            <i data-lucide="star"></i>
+            <div><div class="trust-num">4.9★</div>Average Rating</div>
+        </div>
+    </div>
+
+    <!-- FEATURES SECTION -->
+    <section id="features" class="section">
+        <h2 class="section-title reveal">The Premium Choice</h2>
+        <p class="section-subtitle reveal">Everything you need for effortless, responsible waste management across Nigeria.</p>
+        <div class="feature-grid">
+            <div class="feature-card reveal">
+                <i data-lucide="zap"></i>
+                <h3>Express Pickup</h3>
+                <p>Request a collection and have our agents at your door within 60 minutes. Speed meets reliability — always on time, every time, anywhere in Nigeria.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i data-lucide="shield-check"></i>
+                <h3>Verified Agents</h3>
+                <p>Every collector is background-checked, uniformed, and GPS-tracked in real-time. You can follow your pickup live on the map.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i data-lucide="leaf"></i>
+                <h3>Eco-Sorting</h3>
+                <p>We sort, recycle, and responsibly dispose of your waste to keep Nigeria's communities green and healthy for future generations.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i data-lucide="bell"></i>
+                <h3>Smart Scheduling</h3>
+                <p>Set recurring pickups — daily, weekly, or custom. Get SMS and app reminders so you never miss a collection day.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i data-lucide="wallet"></i>
+                <h3>Easy Payments</h3>
+                <p>Pay via bank transfer, card, or USSD. Manage your subscription and wallet balance directly from your dashboard.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i data-lucide="award"></i>
+                <h3>Eco Points</h3>
+                <p>Earn reward points for every pickup. Redeem them for discounts, free collections, or partner offers nationwide.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS SECTION -->
+    <div class="stats-section reveal">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-big">60min</div>
+                <p>Average Pickup Time</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-big">36</div>
+                <p>States & FCT Covered</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-big">1,000+</div>
+                <p>Verified Collectors</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-big">99%</div>
+                <p>On-Time Completion Rate</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <section id="process" class="section">
+        <h2 class="section-title reveal">How It Works</h2>
+        <p class="section-subtitle reveal">From signup to spotless — three simple steps.</p>
+
+        <div class="process-visual reveal" style="margin-bottom: 60px;">
+            <div class="process-step">
+                <div class="process-icon"><i data-lucide="user-plus"></i></div>
+                <div>
+                    <h4>Sign Up</h4>
+                    <p>Create your free account in under 2 minutes</p>
+                </div>
+            </div>
+            <div class="process-connector"></div>
+            <div class="process-step">
+                <div class="process-icon"><i data-lucide="calendar"></i></div>
+                <div>
+                    <h4>Schedule</h4>
+                    <p>Book a one-time or recurring pickup</p>
+                </div>
+            </div>
+            <div class="process-connector"></div>
+            <div class="process-step">
+                <div class="process-icon"><i data-lucide="truck"></i></div>
+                <div>
+                    <h4>Collection</h4>
+                    <p>Agent arrives, verifies, and handles it all</p>
+                </div>
+            </div>
+            <div class="process-connector"></div>
+            <div class="process-step">
+                <div class="process-icon"><i data-lucide="recycle"></i></div>
+                <div>
+                    <h4>Eco-Process</h4>
+                    <p>Waste sorted & sustainably disposed</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-grid">
+            <div class="step-card reveal">
+                <span class="step-num">01</span>
+                <i data-lucide="calendar-check" class="step-icon"></i>
+                <h3>Schedule</h3>
+                <p>Book a pickup via the app or set a recurring weekly schedule that fits your household routine.</p>
+            </div>
+            <div class="step-card reveal">
+                <span class="step-num">02</span>
+                <i data-lucide="user-check" class="step-icon"></i>
+                <h3>Collection</h3>
+                <p>Your assigned, verified agent arrives on time, confirms the pickup, and handles all the heavy lifting.</p>
+            </div>
+            <div class="step-card reveal">
+                <span class="step-num">03</span>
+                <i data-lucide="recycle" class="step-icon"></i>
+                <h3>Eco-Process</h3>
+                <p>Waste is taken to our certified facility for proper sorting, recycling, and eco-friendly disposal.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials" class="section testimonials-section">
+        <h2 class="section-title reveal">What Nigerians Are Saying</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card reveal">
+                <div class="stars">★★★★★</div>
+                <p>"TrashAway completely changed how I manage waste at home. The agents are always on time and very professional. My estate has never been this clean."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">A</div>
+                    <div class="author-info">
+                        <strong>Adaeze Okonkwo</strong>
+                        <span>Lekki Phase 1, Lagos</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="stars">★★★★★</div>
+                <p>"The premium plan is worth every naira. Unlimited express pickups means I never have to worry about waste piling up. The eco-sorting is a great touch too."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">T</div>
+                    <div class="author-info">
+                        <strong>Taiwo Adeleke</strong>
+                        <span>Maitama, Abuja</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="stars">★★★★★</div>
+                <p>"As a business owner, TrashAway handles all our commercial waste efficiently. The dashboard makes it easy to track everything. Highly recommended!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">K</div>
+                    <div class="author-info">
+                        <strong>Kunle Fashola</strong>
+                        <span>GRA, Port Harcourt</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="section">
+        <h2 class="section-title reveal">Simple, Transparent Pricing</h2>
+        <p class="section-subtitle reveal">No hidden charges. Cancel anytime.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:30px; max-width:800px; margin:0 auto;">
+
+            <!-- BASIC PLAN -->
+            <div class="feature-card pricing-card reveal" style="background:var(--card-bg); border:2px solid var(--glass-border); border-radius:30px; padding:40px; text-align:center; display:flex; flex-direction:column; transition:0.4s;">
+                <div style="height:60px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+                    <i data-lucide="package" style="color:var(--primary); width:48px; height:48px;"></i>
+                </div>
+                <p style="font-size:22px; font-weight:800; color:var(--text); margin-bottom:8px;">Basic</p>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">For occasional users</p>
+                <div style="font-size:48px; font-weight:900; color:var(--primary); margin-bottom:6px;">&#8358;0<span style="font-size:16px; opacity:0.7;">/month</span></div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:28px;">Always free</p>
+                <ul class="price-list" style="text-align:left; flex:1; list-style:none;">
+                    <li><i data-lucide="check"></i> 1 pickup every 2 months</li>
+                    <li><i data-lucide="check"></i> Standard scheduling</li>
+                    <li><i data-lucide="check"></i> Basic tracking</li>
+                    <li><i data-lucide="check"></i> Email support</li>
+                    <li style="opacity:0.35;"><i data-lucide="x"></i> Eco Points</li>
+                </ul>
+                <a href="signup.html" class="btn-pill btn-outline" style="display:block; text-align:center; margin-top:24px; width:100%;">Get Started Free</a>
+            </div>
+
+            <!-- PRO PLAN -->
+            <div class="feature-card pricing-card featured reveal" style="border:2px solid var(--primary); border-radius:30px; padding:40px; text-align:center; display:flex; flex-direction:column; position:relative; transition:0.4s;">
+                <div style="position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:var(--primary); color:#000; padding:5px 20px; border-radius:50px; font-weight:800; font-size:12px; white-space:nowrap;">Most Popular</div>
+                <div style="height:60px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+                    <i data-lucide="star" style="color:var(--primary); width:48px; height:48px;"></i>
+                </div>
+                <p style="font-size:22px; font-weight:800; color:var(--text); margin-bottom:8px;">Pro</p>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">For active users</p>
+                <div style="font-size:48px; font-weight:900; color:var(--primary); margin-bottom:6px;">&#8358;2,500<span style="font-size:16px; opacity:0.7;">/month</span></div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:28px;">Cancel anytime</p>
+                <ul class="price-list" style="text-align:left; flex:1; list-style:none;">
+                    <li><i data-lucide="check"></i> Unlimited pickups per month</li>
+                    <li><i data-lucide="check"></i> Smart scheduling</li>
+                    <li><i data-lucide="check"></i> Real-time GPS tracking</li>
+                    <li><i data-lucide="check"></i> 24/7 phone support</li>
+                    <li><i data-lucide="check"></i> Earn Eco Points per pickup</li>
+                </ul>
+                <a href="signup.html" class="btn-pill" style="display:block; text-align:center; margin-top:24px; width:100%;">Subscribe Now</a>
+            </div>
+        </div>
+        <p style="text-align:center; margin-top:30px; opacity:0.6; font-size:14px;">
+            Need more details? <a href="pricing.html" style="color:var(--primary); font-weight:700; text-decoration:none;">View full pricing &#8594;</a>
+        </p>
+    </section>
+
+    
+    <!-- JOIN AS COLLECTOR CTA -->
+    <section class="section" style="padding-top: 0;">
+        <div class="collector-cta">
+            <div>
+                <div class="badge" style="margin-bottom: 12px;">🚛 For Waste Collectors</div>
+                <h3 style="font-size: clamp(22px, 3.5vw, 32px); font-weight: 900; letter-spacing: -1px; margin-bottom: 10px; color: var(--text);">Join Our Collector Network</h3>
+                <p style="color: var(--text-muted); font-size: 15px; max-width: 420px;">Own a truck or waste management company anywhere in Nigeria? Partner with TrashAway to get consistent jobs, real-time routing, and guaranteed monthly earnings.</p>
+            </div>
+            <a href="signup.html#collector" class="btn-pill btn-large" style="flex-shrink: 0;">Sign Up as Collector</a>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <div class="cta-section reveal">
+        <div class="cta-inner">
+            <h2>Start Living Cleaner Today</h2>
+            <p>Join thousands of Nigerian homes already using TrashAway. Setup takes less than 2 minutes.</p>
+            <div class="cta-btns">
+                <a href="signup.html" class="btn-white">Create Free Account</a>
+                <a href="how-it-works.html" class="btn-ghost">Learn More</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="index.html" class="logo">Trash<span>Away</span></a>
+                <p>Nigeria's premier waste management service. Clean homes, green nation.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Product</h5>
+                <a href="how-it-works.html">Features</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="how-it-works.html">How It Works</a>
+            </div>
+            <div class="footer-col">
+                <h5>Company</h5>
+                <a href="about-us.html">About Us</a>
+                <a href="about-us.html">Careers</a>
+                <a href="contact-us.html">Blog</a>
+            </div>
+            <div class="footer-col">
+                <h5>Join Us</h5>
+                <a href="signup.html">Sign Up as User</a>
+                <a href="signup.html#collector">Become a Collector</a>
+                <a href="login.html">Log In</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 TrashAway. All rights reserved.</p>
+            <p>Made with 💚 for Nigeria</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { auth } from './firebase.js';
+
+        lucide.createIcons();
+
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Cursor grows on interactive elements
+        const interactables = document.querySelectorAll('a, button, .feature-card, .step-card, .testimonial-card, .trust-item, .process-step, .nav-item');
+        interactables.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
+                cursor.style.filter = 'drop-shadow(0 0 18px var(--primary-glow))';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.filter = 'drop-shadow(0 0 10px var(--primary-glow))';
+            });
+        });
+
+        document.querySelectorAll('.feature-card, .step-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--x', `${e.clientX - rect.left}px`);
+                card.style.setProperty('--y', `${e.clientY - rect.top}px`);
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const island = document.querySelector('.dynamic-island');
+            if (window.scrollY > 60) {
+                island.style.opacity = '0.9';
+            } else {
+                island.style.opacity = '1';
+            }
+        });
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        window.addEventListener('scroll', () => {
+            const pillLogo = document.querySelector('.logo');
+            const topLogoContainer = document.querySelector('.top-logo-container');
+            if (pillLogo && topLogoContainer) {
+                if (window.scrollY > 50) {
+                    pillLogo.classList.remove('pill-logo-hidden');
+                    pillLogo.classList.add('pill-logo-visible');
+                    topLogoContainer.style.opacity = '0';
+                    topLogoContainer.style.transform = 'translateY(-20px)';
+                    topLogoContainer.style.pointerEvents = 'none';
+                } else {
+                    pillLogo.classList.add('pill-logo-hidden');
+                    pillLogo.classList.remove('pill-logo-visible');
+                    topLogoContainer.style.opacity = '1';
+                    topLogoContainer.style.transform = 'translateY(0)';
+                    topLogoContainer.style.pointerEvents = 'auto';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

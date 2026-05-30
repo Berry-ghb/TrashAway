@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request History | TrashAway</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="history"></i></div>
+
+    <div class="nav-container">
+        <nav class="dynamic-island">
+            <div class="island-content">
+                <a href="index.html" class="logo-brand">
+                    <img src="image.png" alt="TrashAway Logo" class="logo-img">
+                </a>
+                <div class="nav-links">
+                    <a href="how-it-works.html">How It Works</a>
+                    <a href="about-us.html">About Us</a>
+                    <a href="pricing.html">Pricing</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="contact-us.html">Contact</a>
+                </div>
+                <div class="island-right">
+                    <a href="dashboard.html" class="btn-pill">My Dashboard</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <main class="section" style="max-width: 1080px; margin: 0 auto; padding: 70px 20px 120px;">
+        <div class="hero-content" style="max-width: 940px; margin: 0 auto 40px; text-align: center;">
+            <div class="badge">📋 Track your pickup requests</div>
+            <h1>My Request History</h1>
+            <p class="hero-p">View all your pickup requests, their current status, and track your waste collection history.</p>
+        </div>
+
+        <div class="glass-panel" style="padding: 36px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+                <h3 style="color: var(--text); font-size: 18px; font-weight: 800;">Your Pickup Requests</h3>
+                <a href="request-pickup.html" class="btn-pill" style="padding: 10px 20px; font-size: 14px;">+ New Request</a>
+            </div>
+
+            <div id="request-history-list"></div>
+
+            <div id="empty-state" class="glass-panel" style="text-align: center; padding: 60px 24px; display: none;">
+                <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                    <i data-lucide="package" style="color: var(--primary); width: 32px; height: 32px;"></i>
+                </div>
+                <h4 style="color: var(--text); font-size: 18px; font-weight: 800; margin-bottom: 8px;">No requests yet</h4>
+                <p style="color: var(--text-muted); margin-bottom: 24px;">Your pickup request history will appear here once you submit your first request.</p>
+                <a href="request-pickup.html" class="btn-pill">Submit Your First Request</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        document.querySelectorAll('a, button, input, select, textarea, .btn-pill, .nav-item, .glass-panel').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
+                cursor.style.filter = 'drop-shadow(0 0 18px var(--primary-glow))';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.filter = 'drop-shadow(0 0 10px var(--primary-glow))';
+            });
+        });
+
+        document.body.classList.add('light-theme');
+
+        function renderRequestHistory() {
+            const requests = JSON.parse(localStorage.getItem('trashaway-requests') || '[]');
+            const container = document.getElementById('request-history-list');
+            const emptyState = document.getElementById('empty-state');
+
+            if (!requests.length) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = '';
+
+            requests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(req => {
+                const statusClass = req.status === 'complete' ? 'status-complete' : req.status === 'assigned' ? 'status-assigned' : 'status-pending';
+                const statusText = req.status === 'complete' ? 'Completed' : req.status === 'assigned' ? 'Assigned' : 'Pending';
+                const createdDate = new Date(req.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const card = document.createElement('div');
+                card.className = 'glass-panel';
+                card.style.cssText = 'padding: 24px; margin-bottom: 16px; border-radius: 16px;';
+                card.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <h4 style="color: var(--text); font-size: 16px; font-weight: 800; margin-bottom: 4px;">${req.address}</h4>
+                            <p style="color: var(--text-muted); font-size: 14px;">${req.city}, ${req.state} · ${req.wasteType} · ${req.bagCount}</p>
+                        </div>
+                        <span class="activity-badge ${statusClass}">${statusText}</span>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+                        <div style="flex: 1;">
+                            <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;"><strong>Requested:</strong> ${req.pickupDay} at ${req.pickupTime}</p>
+                            <p style="color: var(--text-muted); font-size: 13px;"><strong>Submitted:</strong> ${createdDate}</p>
+                            ${req.notes ? `<p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;"><strong>Notes:</strong> ${req.notes}</p>` : ''}
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                            <div style="font-size: 12px; color: var(--text-muted); text-align: right;">
+                                <div>Request ID: ${req.id.slice(-8)}</div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                container.appendChild(card);
+            });
+
+            lucide.createIcons();
+        }
+
+        renderRequestHistory();
+
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                const cursor = document.getElementById('custom-cursor');
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
+                cursor.style.filter = 'drop-shadow(0 0 18px var(--primary-glow))';
+            });
+            el.addEventListener('mouseleave', () => {
+                const cursor = document.getElementById('custom-cursor');
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.filter = 'drop-shadow(0 0 10px var(--primary-glow))';
+            });
+        });
+    </script>
+</body>
+</html>

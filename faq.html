@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ & Support | TrashAway</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .faq-container {
+            padding: 140px 10%;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+            align-items: start;
+        }
+
+        .faq-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .faq-tab {
+            padding: 12px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .faq-tab:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .faq-tab.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .faq-content {
+            display: none;
+        }
+
+        .faq-content.active {
+            display: block;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            padding: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 16px var(--primary-glow);
+        }
+
+        .faq-question {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--text);
+        }
+
+        .faq-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+            border-radius: 50%;
+            color: var(--primary);
+            flex-shrink: 0;
+            transition: 0.3s transform;
+        }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--glass-border);
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+
+        .contact-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .contact-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+
+        .contact-icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .contact-card h3 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .contact-card p {
+            opacity: 0.7;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .contact-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="help-circle"></i></div>
+
+    <!-- DYNAMIC ISLAND NAVIGATION -->
+    <div class="nav-container">
+        <nav class="dynamic-island">
+            <div class="island-content">
+                <a href="index.html" class="logo-brand">
+                    <img src="image.png" alt="TrashAway Logo" class="logo-img">
+                </a>
+                <div class="nav-links">
+                    <a href="index.html#features">Features</a>
+                    <a href="how-it-works.html">How It Works</a>
+                    <a href="about-us.html">About Us</a>
+                    <a href="pricing.html">Pricing</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="contact-us.html">Contact</a>
+                </div>
+                <div class="island-right">
+
+                    <a href="login.html" class="btn-pill">Login</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div style="height: 100px;"></div>
+
+    <section class="section" style="padding-top: 60px;">
+        <h1 class="section-title reveal">Help & Support</h1>
+        <p class="section-subtitle reveal">Find answers to common questions. We're here to help!</p>
+    </section>
+
+    <div class="faq-container">
+        <div class="faq-grid">
+            <div>
+                <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 20px;">Browse Topics</h3>
+                <div class="faq-tabs">
+                    <button class="faq-tab active" onclick="showCategory(event, 'getting-started')">Getting Started</button>
+                    <button class="faq-tab" onclick="showCategory(event, 'account')">Account & Billing</button>
+                    <button class="faq-tab" onclick="showCategory(event, 'pickup')">Pickups</button>
+                    <button class="faq-tab" onclick="showCategory(event, 'ecopoints')">Eco Points</button>
+                    <button class="faq-tab" onclick="showCategory(event, 'technical')">Technical Issues</button>
+                    <button class="faq-tab" onclick="showCategory(event, 'collector')">For Collectors</button>
+                </div>
+            </div>
+
+            <div>
+                <!-- Getting Started -->
+                <div id="getting-started" class="faq-content active">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            How do I sign up on TrashAway?
+                        </div>
+                        <div class="faq-answer">
+                            Download the TrashAway app or visit our website, click "Sign Up", enter your email and phone number, verify your phone, set your address, and you're ready! The whole process takes less than 2 minutes.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            Is TrashAway available in my area?
+                        </div>
+                        <div class="faq-answer">
+                            TrashAway is currently available in Lagos, Ibadan, Kano, Port Harcourt, and Abuja. We're expanding to more cities soon. Check your area on our app to see service availability.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            What waste types do you accept?
+                        </div>
+                        <div class="faq-answer">
+                            We accept household waste, recyclables (plastic, paper, glass, metal), organic waste, and commercial waste. Some hazardous materials are restricted. Check our app for a complete list of accepted waste types.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            Do you provide waste bins?
+                        </div>
+                        <div class="faq-answer">
+                            We don't provide permanent bins, but you can use your own bags or containers. For large-scale commercial pickups, contact our sales team for specialized solutions.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account & Billing -->
+                <div id="account" class="faq-content">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            How much does TrashAway cost?
+                        </div>
+                        <div class="faq-answer">
+                            We offer flexible plans: Free (Basic), ₦2,500/month (Pro), and ₦8,500/month (Business). Each plan includes different features and benefits. See our Pricing page for details.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            What payment methods do you accept?
+                        </div>
+                        <div class="faq-answer">
+                            We accept all major debit/credit cards, bank transfers, and mobile money (MTN, Airtel, 9Mobile). All payments are secure and encrypted with SSL technology.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            Can I cancel my subscription anytime?
+                        </div>
+                        <div class="faq-answer">
+                            Yes! There are no contracts or hidden fees. Cancel anytime from your account settings. Your cancellation takes effect immediately, and no refunds are issued for partial months.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            How do I update my payment method?
+                        </div>
+                        <div class="faq-answer">
+                            Go to Account Settings > Billing > Payment Methods. You can add, edit, or remove payment methods anytime. Changes take effect on your next billing date.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pickups -->
+                <div id="pickup" class="faq-content">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            How quickly can I get a pickup?
+                        </div>
+                        <div class="faq-answer">
+                            Basic plan users get standard pickup within 4 hours. Pro members get priority pickup within 60 minutes. Business customers get express pickup within 30 minutes. Request a pickup anytime, 24/7.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            Can I reschedule or cancel a pickup?
+                        </div>
+                        <div class="faq-answer">
+                            Yes! You can reschedule or cancel pickups through your app up to 30 minutes before the scheduled time. No cancellation fees apply.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            What if my collector doesn't show up?
+                        </div>
+                        <div class="faq-answer">
+                            If your collector doesn't arrive within 15 minutes of the scheduled time, contact support immediately. We'll send a replacement collector or refund your service fee.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            Can I schedule recurring pickups?
+                        </div>
+                        <div class="faq-answer">
+                            Yes! Pro and Business plans include automatic scheduling. Set pickups for daily, weekly, or custom intervals, and we'll collect on schedule automatically.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Eco Points -->
+                <div id="ecopoints" class="faq-content">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            How do Eco Points work?
+                        </div>
+                        <div class="faq-answer">
+                            Every pickup earns Eco Points based on waste sorted and recycled. Pro members earn 2x points. Basic members earn 1x points per pickup. You'll see points in your app immediately after pickup completion.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            How do I redeem Eco Points?
+                        </div>
+                        <div class="faq-answer">
+                            Go to the Rewards section in your app to redeem points for discounts, cash back, or donate to environmental projects. 100 points = ₦100 in value.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            Do Eco Points expire?
+                        </div>
+                        <div class="faq-answer">
+                            No! Your Eco Points never expire. Accumulate them over time and redeem whenever you want. There's no time limit on rewards redemption.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            Can I transfer Eco Points to others?
+                        </div>
+                        <div class="faq-answer">
+                            Eco Points are tied to your account and cannot be transferred. However, you can redeem them for gift cards and share those with friends and family.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical Issues -->
+                <div id="technical" class="faq-content">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            The app keeps crashing. What should I do?
+                        </div>
+                        <div class="faq-answer">
+                            Try uninstalling and reinstalling the app. Make sure you have the latest version from your app store. Clear your cache from phone settings. If the issue persists, contact support@trashaway.com.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            I forgot my password. How do I reset it?
+                        </div>
+                        <div class="faq-answer">
+                            Click "Forgot Password" on the login screen. Enter your email, and we'll send a password reset link. Click the link to set a new password.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            The app won't accept my phone number. Why?
+                        </div>
+                        <div class="faq-answer">
+                            Make sure you've entered a valid Nigerian phone number starting with +234 or 0. If the issue continues, try using a different phone or contact support.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            I'm having trouble with GPS tracking. What can I do?
+                        </div>
+                        <div class="faq-answer">
+                            Ensure location services are enabled on your phone. Go to Settings > Privacy > Location Services and allow TrashAway access. Restart the app if tracking isn't working.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- For Collectors -->
+                <div id="collector" class="faq-content">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            How do I become a TrashAway Collector?
+                        </div>
+                        <div class="faq-answer">
+                            Download our Collector app, register with your details, pass our background check, and complete onboarding training. You'll need a valid ID, phone number, and transport option.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            How much can I earn as a collector?
+                        </div>
+                        <div class="faq-answer">
+                            Earnings vary based on pickups completed and customer ratings. Collectors typically earn ₦3,000-₦8,000 per day. Top collectors earn ₦12,000+ daily. Payments are made weekly.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            Do you provide uniforms and equipment?
+                        </div>
+                        <div class="faq-answer">
+                            Yes! TrashAway provides uniforms, gloves, and safety equipment at no cost. You're responsible for providing your own transport (motorcycle, van, or truck).
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <div class="faq-icon"><i data-lucide="chevron-down"></i></div>
+                            What if I need to take time off?
+                        </div>
+                        <div class="faq-answer">
+                            You can set your availability in the Collector app. Mark yourself unavailable for specific dates/times, and you won't receive job requests. Flexibility is built into our system!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="section" style="background: var(--bg2);">
+        <h2 class="section-title reveal">Still Need Help?</h2>
+        <p class="section-subtitle reveal">Contact our support team</p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto;">
+            <div class="contact-card reveal">
+                <div class="contact-icon"><i data-lucide="mail"></i></div>
+                <h3>Email Us</h3>
+                <p>Get detailed responses to your questions</p>
+                <a href="mailto:support@trashaway.com" class="contact-link">support@trashaway.com</a>
+            </div>
+
+            <div class="contact-card reveal">
+                <div class="contact-icon"><i data-lucide="phone"></i></div>
+                <h3>Call Us</h3>
+                <p>Chat with our team directly</p>
+                <a href="tel:+2349123456789" class="contact-link">+234 (0) 912 345 6789</a>
+            </div>
+
+            <div class="contact-card reveal">
+                <div class="contact-icon"><i data-lucide="message-circle"></i></div>
+                <h3>Live Chat</h3>
+                <p>Chat with support in real-time</p>
+                <a href="#" class="contact-link">Start a conversation</a>
+            </div>
+        </div>
+    </section>
+
+    <footer style="background: var(--bg); border-top: 1px solid var(--glass-border); padding: 60px 10% 20px; text-align: center;">
+        <p style="opacity: 0.6;">© 2026 TrashAway. Transforming waste management in Nigeria.</p>
+    </footer>
+
+    <script>
+        document.body.classList.add('light-theme');
+
+        function showCategory(event, categoryId) {
+            // Hide all categories
+            document.querySelectorAll('.faq-content').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.faq-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected category
+            document.getElementById(categoryId).classList.add('active');
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+        }
+
+        function toggleFAQ(element) {
+            const item = element.closest('.faq-item');
+            item.classList.toggle('open');
+        }
+
+        function initCursor() {
+            const cursor = document.getElementById('custom-cursor');
+            if (!cursor || window.innerWidth <= 768) return;
+            
+            document.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+        }
+
+        function initReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.08 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            initCursor();
+            initReveal();
+        });
+
+
+    </script>
+
+</body>
+</html>

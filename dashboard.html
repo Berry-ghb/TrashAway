@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | TrashAway</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="firebase.js"></script>
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="layout-dashboard"></i></div>
+
+    <!-- Mobile Hamburger -->
+<button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+    <i data-lucide="menu"></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="dashboard-container">
+    <aside class="sidebar" id="sidebar">
+        <a href="dashboard.html" class="sidebar-logo">
+            <img src="image.png" alt="TrashAway Logo">
+            <span>TrashAway</span>
+        </a>
+
+        <nav>
+            <a href="dashboard.html" class="nav-item active">
+                <i data-lucide="layout-dashboard"></i> Overview
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="truck"></i> My Pickups
+            </a>
+            <a href="request-history.html" class="nav-item">
+                <i data-lucide="history"></i> Request History
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="calendar"></i> Schedule
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="wallet"></i> Payments
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="award"></i> Eco Points
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i data-lucide="user"></i> Profile
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">A</div>
+                <div class="sidebar-user-info">
+                    <strong>Adaeze O.</strong>
+                    <span>Premium Plan</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="dash-header">
+            <div>
+                <h1 id="dashboard-greeting">Good morning</h1>
+                <p style="color: var(--text-muted); font-size: 13px; font-weight: 600; margin-top: 8px;">Manage your requests, wallet, and profile from one place.</p>
+            </div>
+            <a href="request-pickup.html" class="btn-pill" style="padding: 13px 26px;">+ Request Pickup</a>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="clock"></i></div>
+                <h4>Pending Requests</h4>
+                <h3 id="pending-count">0</h3>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="wallet"></i></div>
+                <h4>Wallet Balance</h4>
+                <h3 id="wallet-balance">₦0</h3>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="award"></i></div>
+                <h4>Eco Points</h4>
+                <h3 id="eco-points">0</h3>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i data-lucide="check-circle"></i></div>
+                <h4>Total Pickups</h4>
+                <h3 id="total-pickups">0</h3>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                <div>
+                    <h3 style="margin:0 0 8px;">Quick Actions</h3>
+                    <p style="margin:0; color: var(--text-muted);">Manage your requests, history, and profile from one place.</p>
+                </div>
+                <div class="action-grid" style="display:flex; gap:12px; flex-wrap:wrap; justify-content:flex-end;">
+                    <a href="request-pickup.html" class="btn-pill">Request Pickup</a>
+                    <a href="request-history.html" class="btn-outline">View History</a>
+                    <a href="profile.html" class="btn-ghost">Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEXT PICKUP -->
+        <div class="glass-panel" style="margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 52px; height: 52px; border-radius: 16px; background: var(--primary-light); border: 1.5px solid var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i data-lucide="truck" style="color: var(--primary); width: 22px; height: 22px;"></i>
+                </div>
+                <div>
+                    <p style="font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">NEXT SCHEDULED PICKUP</p>
+                    <strong id="next-pickup-summary" style="color: var(--text); font-size: 16px;">No pickup requests yet</strong>
+                    <p id="next-pickup-detail" style="font-size: 13px; color: var(--text-muted); margin-top: 3px;">Create a pickup request to see your next collection.</p>
+                </div>
+            </div>
+            <span class="activity-badge" id="next-pickup-status">Waiting</span>
+        </div>
+
+        <!-- ACTIVITY FEED -->
+        <div class="activity-feed">
+            <h3>Recent Activity</h3>
+            <div id="activity-list"></div>
+        </div>
+    </main>
+</div>
+
+<script type="module">
+    import { auth } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { collection, query, where, orderBy, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { db } from './firebase.js';
+
+    function getTimeGreeting() {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) return 'Good Morning';
+        if (hour >= 12 && hour < 17) return 'Good Afternoon';
+        if (hour >= 17 && hour < 21) return 'Good Evening';
+        return 'Hello';
+    }
+
+    // Check authentication and load user data
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                const profile = userDoc.data();
+                const firstName = (profile.firstName || '').trim();
+                const fullName = `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
+                const greetingName = firstName || 'there';
+                document.querySelector('.sidebar-user strong').textContent = fullName || 'User';
+                document.querySelector('.sidebar-avatar').textContent = (firstName || 'U').charAt(0).toUpperCase();
+                document.getElementById('wallet-balance').textContent = profile.walletBalance ? `₦${profile.walletBalance}` : '₦0';
+                document.getElementById('eco-points').textContent = profile.ecoPoints || '0';
+                const greeting = document.getElementById('dashboard-greeting');
+                if (greeting) {
+                    greeting.textContent = `${getTimeGreeting()}, ${greetingName}`;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading user data:', error);
+        }
+
+        const requestsQuery = query(collection(db, 'requests'), where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
+        onSnapshot(requestsQuery, (snapshot) => {
+            const requests = [];
+            snapshot.forEach(docSnap => requests.push({ id: docSnap.id, ...docSnap.data() }));
+            renderDashboardRequests(requests);
+        });
+    });
+
+    function renderDashboardRequests(requests) {
+        const pendingRequests = requests.filter(req => req.status === 'pending');
+        const assignedRequests = requests.filter(req => req.status === 'assigned');
+        document.getElementById('pending-count').textContent = pendingRequests.length;
+        document.getElementById('total-pickups').textContent = requests.filter(req => req.status === 'complete').length;
+
+        const nextSummary = document.getElementById('next-pickup-summary');
+        const nextDetail = document.getElementById('next-pickup-detail');
+        const nextStatus = document.getElementById('next-pickup-status');
+        const activityList = document.getElementById('activity-list');
+
+        if (pendingRequests.length > 0) {
+            const next = pendingRequests[0];
+            nextSummary.textContent = `${next.pickupDay || 'Next'} — ${next.pickupTime || 'TBD'}`;
+            nextDetail.textContent = `${next.area || 'Unknown area'}, ${next.city || ''} (${next.state || ''}) · ${next.wasteType || 'General'}`;
+            nextStatus.textContent = 'Pending';
+            nextStatus.classList.remove('status-complete', 'status-assigned');
+            nextStatus.classList.add('status-pending');
+        } else if (assignedRequests.length > 0) {
+            const next = assignedRequests[0];
+            nextSummary.textContent = `Accepted by ${next.assignedCompanyName || 'a collector'}`;
+            nextDetail.textContent = next.assignedPhone ? `You will be contacted at ${next.assignedPhone}.` : `The collector will contact you shortly.`;
+            nextStatus.textContent = 'Accepted';
+            nextStatus.classList.remove('status-complete', 'status-pending');
+            nextStatus.classList.add('status-assigned');
+        } else {
+            nextSummary.textContent = 'No pickup requests yet';
+            nextDetail.textContent = 'Create a pickup request to see your next collection.';
+            nextStatus.textContent = 'Waiting';
+            nextStatus.classList.remove('status-complete', 'status-assigned', 'status-pending');
+        }
+
+        activityList.innerHTML = '';
+        if (requests.length === 0) {
+            activityList.innerHTML = `
+                <div class="activity-item">
+                    <div class="activity-dot"></div>
+                    <div class="activity-text">
+                        <strong>Ready to request your first pickup</strong>
+                        <span>Use the button above to send a collection request now.</span>
+                    </div>
+                    <span class="activity-badge status-pending">Start</span>
+                </div>`;
+            return;
+        }
+
+        requests.slice(0, 4).forEach(req => {
+            const statusClass = req.status === 'complete' ? 'status-complete' : req.status === 'assigned' ? 'status-assigned' : 'status-pending';
+            const badgeText = req.status === 'complete' ? 'Done' : req.status === 'assigned' ? 'Assigned' : 'Pending';
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+                <div class="activity-dot"></div>
+                <div class="activity-text">
+                    <strong>${req.pickupDay || 'Pickup'} • ${req.area || 'Unknown area'}</strong>
+                    <span>${req.city || ''}, ${req.state || ''} · ${req.pickupTime || 'TBD'} · ${req.wasteType || 'General'}</span>
+                </div>
+                <span class="activity-badge ${statusClass}">${badgeText}</span>`;
+            activityList.appendChild(item);
+        });
+    }
+
+    lucide.createIcons();
+
+    // Cursor
+    const cursor = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+
+    // Cursor reactivity on desktop
+    if (window.innerWidth > 768) {
+        document.querySelectorAll('a, button, .stat-card, .activity-item, .nav-item, .glass-panel').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
+                cursor.style.filter = 'drop-shadow(0 0 18px var(--primary-glow))';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.filter = 'drop-shadow(0 0 10px var(--primary-glow))';
+            });
+        });
+    }
+
+    // Mobile sidebar
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
+
+</body>
+</html>

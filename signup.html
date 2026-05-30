@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | TrashAway</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="firebase.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            display: flex; align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+    .signup-wrapper {
+        width: 100%; max-width: 520px;
+    }
+
+    .signup-logo {
+        text-align: center; margin-bottom: 28px;
+    }
+    .signup-logo a { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--text); }
+    .signup-logo a span { color: var(--primary); }
+
+    /* Tab Switcher */
+    .role-tabs {
+        display: flex; background: var(--input-bg);
+        border: 1.5px solid var(--input-border);
+        border-radius: 16px; padding: 5px;
+        margin-bottom: 28px; gap: 5px;
+    }
+    .role-tab {
+        flex: 1; padding: 13px 10px; border-radius: 12px;
+        border: none; background: transparent; color: var(--text-muted);
+        font-weight: 700; font-size: 13px; transition: 0.3s;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .role-tab svg { width: 16px; height: 16px; }
+    .role-tab.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px var(--primary-glow); }
+
+    .signup-card {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1.5px solid var(--glass-border);
+        padding: 36px; border-radius: 28px;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .signup-card h2 { font-size: 24px; font-weight: 900; margin-bottom: 6px; color: var(--text); }
+    .signup-card .sub { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+
+    .form-panel { display: none; }
+    .form-panel.active { display: block; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+
+    label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .input-field { margin: 0; }
+
+    select.input-field {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 36px;
+    }
+
+    .divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; }
+    .divider span { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--input-border); }
+
+    .collector-perks {
+        background: var(--primary-light);
+        border: 1px solid rgba(0, 168, 68, 0.2);
+        border-radius: 14px; padding: 16px;
+        margin-bottom: 20px; display: none;
+    }
+    .collector-perks.show { display: block; }
+    .collector-perks p { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+    .collector-perks ul { list-style: none; }
+    .collector-perks li {
+        font-size: 12px; color: var(--text-muted);
+        margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+    }
+    .collector-perks li svg { color: var(--primary); width: 13px; height: 13px; flex-shrink: 0; }
+
+    .terms-text { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 16px; line-height: 1.5; }
+    .terms-text a { color: var(--primary); text-decoration: none; font-weight: 700; }
+
+    .already-have { margin-top: 20px; text-align: center; font-size: 14px; color: var(--text-muted); }
+    .already-have a { color: var(--primary); text-decoration: none; font-weight: 700; }
+</style>
+
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="user-plus"></i></div>
+
+<div class="signup-wrapper">
+    <div class="signup-logo">
+        <a href="index.html">Trash<span>Away</span></a>
+    </div>
+
+    <!-- ROLE TABS -->
+    <div class="role-tabs">
+        <button class="role-tab active" id="tab-user" onclick="switchRole('user')">
+            <i data-lucide="home"></i> I'm a Resident
+        </button>
+        <button class="role-tab" id="tab-collector" onclick="switchRole('collector')">
+            <i data-lucide="truck"></i> I'm a Collector
+        </button>
+    </div>
+
+    <div class="signup-card">
+
+        <!-- ===== USER FORM ===== -->
+        <div id="panel-user" class="form-panel active">
+            <h2>Create Your Account</h2>
+            <p class="sub">Start managing your waste smarter, today.</p>
+
+            <form id="user-form" onsubmit="handleUserSignup(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input id="user-firstname" type="text" class="input-field" placeholder="Adaeze" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input id="user-lastname" type="text" class="input-field" placeholder="Okonkwo" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input id="user-email" type="email" class="input-field" placeholder="adaeze@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input id="user-password" type="password" class="input-field" placeholder="Create a strong password" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top: 8px;">Create Account →</button>
+                <p class="terms-text">By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+            </form>
+        </div>
+
+        <!-- ===== COLLECTOR FORM ===== -->
+        <div id="panel-collector" class="form-panel">
+            <h2>Join as a Collector</h2>
+            <p class="sub">Partner with TrashAway and grow your waste business.</p>
+
+            <div class="collector-perks show">
+                <p>🚛 Why Join Our Network?</p>
+                <ul>
+                    <li><i data-lucide="check"></i> Consistent daily job assignments</li>
+                    <li><i data-lucide="check"></i> Real-time routing & navigation</li>
+                    <li><i data-lucide="check"></i> Guaranteed weekly payouts</li>
+                    <li><i data-lucide="check"></i> Free onboarding training</li>
+                </ul>
+            </div>
+
+            <form id="collector-form" onsubmit="handleCollectorSignup(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Company / Business Name</label>
+                        <input id="collector-business" type="text" class="input-field" placeholder="GreenMove Ltd" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Person</label>
+                        <input id="collector-contact" type="text" class="input-field" placeholder="Kunle Fashola" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Business Email</label>
+                    <input id="collector-email" type="email" class="input-field" placeholder="info@greenmove.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Create Password</label>
+                    <input id="collector-password" type="password" class="input-field" placeholder="Create a strong password" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top: 8px;">Apply to Join →</button>
+                <p class="terms-text">By applying, you agree to our <a href="#">Collector Terms</a> and <a href="#">Partner Agreement</a>.</p>
+            </form>
+        </div>
+
+        <div id="verification-panel" class="form-panel">
+            <h2>Verify Your Email</h2>
+            <p class="sub">A 6-digit verification code has been sent to <strong id="verification-email"></strong>. Enter it below to complete account setup.</p>
+            <form id="verification-form" onsubmit="handleVerificationSubmit(event)">
+                <div class="form-group">
+                    <label>Verification Code</label>
+                    <input id="otp-code" type="text" class="input-field" placeholder="123456" required maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top: 8px;">Verify Code →</button>
+                <button type="button" id="resend-code-btn" class="btn-pill" style="margin-top: 12px; display: inline-block;">Resend Code</button>
+                <p id="resend-status" class="terms-text" style="margin-top: 12px;">Check your inbox or spam folder for the code. The code expires in 10 minutes.</p>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="already-have">
+        Already have an account? <a href="login.html">Log in</a>
+    </div>
+</div>
+
+<script type="module">
+    import { auth, db } from './firebase.js';
+    import { createUserWithEmailAndPassword, deleteUser, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    lucide.createIcons();
+    emailjs.init({ publicKey: '5UCLKUa18iuzCe9Yn' });
+
+    // Cursor
+    const cursor = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+
+    // Cursor grows on hover
+    document.querySelectorAll('a, button, .role-tab, input, select, .signup-card').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
+            cursor.style.filter = 'drop-shadow(0 0 18px var(--primary-glow))';
+        });
+        el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursor.style.filter = 'drop-shadow(0 0 10px var(--primary-glow))';
+        });
+    });
+
+    // Enforce dark theme
+    document.body.classList.add('light-theme');
+
+    // Handle collector hash on load
+    if (window.location.hash === '#collector') switchRole('collector');
+
+    function switchRole(role) {
+        document.getElementById('panel-user').classList.toggle('active', role === 'user');
+        document.getElementById('panel-collector').classList.toggle('active', role === 'collector');
+        document.getElementById('tab-user').classList.toggle('active', role === 'user');
+        document.getElementById('tab-collector').classList.toggle('active', role === 'collector');
+        document.getElementById('verification-panel').classList.remove('active');
+        lucide.createIcons();
+    }
+
+    function generateOtp() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    function sendOtpEmail(params) {
+        return emailjs.send('service_ncdmqti', 'template_kw6ynrb', params);
+    }
+
+    function storeVerificationData(data) {
+        localStorage.setItem('trashaway-verification', JSON.stringify(data));
+    }
+
+    function loadVerificationData() {
+        return JSON.parse(localStorage.getItem('trashaway-verification') || 'null');
+    }
+
+    function clearVerificationData() {
+        localStorage.removeItem('trashaway-verification');
+    }
+
+    async function sendVerificationOtp(email, name, userId, role, redirectUrl) {
+        const otp = generateOtp();
+        const verificationData = {
+            userId,
+            role,
+            email,
+            code: otp,
+            expiresAt: Date.now() + 10 * 60 * 1000,
+            redirectUrl
+        };
+
+        storeVerificationData(verificationData);
+
+        const templateParams = {
+            user_name: name,
+            user_email: email,
+            to_name: name,
+            to_email: email,
+            reply_to: email,
+            from_name: 'TrashAway',
+            verification_code: otp,
+            subject: 'TrashAway OTP Verification',
+            message: `Hello ${name}, your TrashAway verification code is ${otp}.`,
+            role: role === 'user' ? 'Resident' : 'Collector'
+        };
+
+        return sendOtpEmail(templateParams);
+    }
+
+    function showVerificationPanel(email) {
+        document.getElementById('panel-user').classList.remove('active');
+        document.getElementById('panel-collector').classList.remove('active');
+        document.getElementById('verification-panel').classList.add('active');
+        document.getElementById('verification-email').textContent = email;
+        updateResendStatus('A 6-digit verification code has been sent to your inbox.');
+        startResendCooldown(30);
+    }
+
+    function updateResendStatus(message) {
+        document.getElementById('resend-status').textContent = message;
+    }
+
+    function startResendCooldown(seconds) {
+        const resendButton = document.getElementById('resend-code-btn');
+        resendButton.disabled = true;
+        resendButton.style.opacity = '0.6';
+        resendButton.textContent = `Resend Code (${seconds}s)`;
+        updateResendStatus('Please wait before requesting a new code.');
+
+        const interval = setInterval(() => {
+            seconds -= 1;
+            resendButton.textContent = `Resend Code (${seconds}s)`;
+            if (seconds <= 0) {
+                clearInterval(interval);
+                resendButton.disabled = false;
+                resendButton.style.opacity = '1';
+                resendButton.textContent = 'Resend Code';
+                updateResendStatus('Check your inbox or spam folder for the code. The code expires in 10 minutes.');
+            }
+        }, 1000);
+    }
+
+    async function handleSignup(e, role) {
+        e.preventDefault();
+
+        const email = document.getElementById(`${role}-email`).value.trim();
+        const password = document.getElementById(`${role}-password`).value;
+        const name = role === 'user'
+            ? `${document.getElementById('user-firstname').value.trim()} ${document.getElementById('user-lastname').value.trim()}`.trim()
+            : `${document.getElementById('collector-business').value.trim()} (${document.getElementById('collector-contact').value.trim()})`;
+
+        if (!email || !password || !name) {
+            alert('Please complete all required fields.');
+            return;
+        }
+
+        let user = null;
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            user = userCredential.user;
+            const profileData = {
+                email,
+                role,
+                createdAt: new Date(),
+                emailVerified: false
+            };
+
+            if (role === 'user') {
+                profileData.firstName = document.getElementById('user-firstname').value.trim();
+                profileData.lastName = document.getElementById('user-lastname').value.trim();
+            } else {
+                profileData.companyName = document.getElementById('collector-business').value.trim();
+                profileData.contactName = document.getElementById('collector-contact').value.trim();
+            }
+
+            await setDoc(doc(db, role === 'user' ? 'users' : 'collectors', user.uid), profileData);
+            localStorage.setItem('trashaway-user-role', role);
+
+            await sendVerificationOtp(email, name, user.uid, role, role === 'user' ? 'dashboard.html' : 'collector-dashboard.html');
+            showVerificationPanel(email);
+
+        } catch (error) {
+            console.error('Signup error:', error);
+            if (user) {
+                try {
+                    await deleteUser(user);
+                } catch (cleanupError) {
+                    console.error('Account cleanup failed:', cleanupError);
+                }
+                try {
+                    await signOut(auth);
+                } catch (signOutError) {
+                    console.error('Sign out after cleanup failed:', signOutError);
+                }
+            }
+
+            let errorMessage = 'Failed to create account. Please try again.';
+            const rawMessage = error.message || error.text || JSON.stringify(error);
+
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage = 'This email is already registered. Please log in instead.';
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage = 'Password should be at least 6 characters.';
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = 'Please enter a valid email address.';
+            } else if (error.code === 'permission-denied' || rawMessage.toLowerCase().includes('insufficient permissions')) {
+                errorMessage = 'Signup failed because Firestore write permissions are blocked. Check your Firestore rules or project permissions.';
+            }
+            if (error.code && !errorMessage.includes(error.code)) {
+                errorMessage += ` (${error.code})`;
+            }
+            if (rawMessage && !errorMessage.includes(rawMessage)) {
+                errorMessage += `\n${rawMessage}`;
+            }
+            alert(errorMessage);
+        }
+    }
+
+    async function handleUserSignup(e) {
+        await handleSignup(e, 'user');
+    }
+
+    async function handleCollectorSignup(e) {
+        await handleSignup(e, 'collector');
+    }
+
+    async function resendVerification() {
+        const verification = loadVerificationData();
+        if (!verification) {
+            alert('No verification session found. Please sign up again.');
+            return;
+        }
+
+        try {
+            await sendVerificationOtp(verification.email, verification.email, verification.userId, verification.role, verification.redirectUrl);
+            alert('A new verification code has been sent.');
+        } catch (error) {
+            console.error('Resend error:', error);
+            alert('Failed to resend code. Please try again later.');
+        }
+    }
+
+    async function handleVerificationSubmit(e) {
+        e.preventDefault();
+        const verification = loadVerificationData();
+        const enteredCode = document.getElementById('otp-code').value.trim();
+
+        if (!verification) {
+            alert('Verification session expired. Please sign up again.');
+            return;
+        }
+
+        if (Date.now() > verification.expiresAt) {
+            alert('Your verification code has expired. Please resend a new code.');
+            return;
+        }
+
+        if (enteredCode !== verification.code) {
+            alert('Incorrect code. Please try again.');
+            return;
+        }
+
+        await updateDoc(doc(db, verification.role === 'user' ? 'users' : 'collectors', verification.userId), {
+            emailVerified: true,
+            verifiedAt: new Date()
+        });
+
+        clearVerificationData();
+        localStorage.setItem('trashaway-user-role', verification.role);
+        window.location.href = verification.redirectUrl;
+    }
+
+    document.getElementById('resend-code-btn').addEventListener('click', resendVerification);
+
+    window.switchRole = switchRole;
+    window.handleUserSignup = handleUserSignup;
+    window.handleCollectorSignup = handleCollectorSignup;
+    window.handleVerificationSubmit = handleVerificationSubmit;
+    window.resendVerification = resendVerification;
+</script>
+
+</body>
+</html>

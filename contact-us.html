@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | TrashAway</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .contact-section {
+            padding: 140px 10%;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 80px;
+            align-items: center;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .contact-method {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .contact-method-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+            font-size: 28px;
+        }
+
+        .contact-method-content h3 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .contact-method-content p {
+            opacity: 0.7;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .contact-method-content a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .contact-method-content a:hover {
+            opacity: 0.7;
+        }
+
+        .contact-form-wrapper {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text);
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .form-buttons button {
+            flex: 1;
+        }
+
+        .success-message {
+            display: none;
+            background: var(--primary-light);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 16px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .social-links a {
+            width: 50px;
+            height: 50px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-section {
+                padding: 100px 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="mail"></i></div>
+
+    <!-- DYNAMIC ISLAND NAVIGATION -->
+    <div class="nav-container">
+        <nav class="dynamic-island">
+            <div class="island-content">
+                <a href="index.html" class="logo-brand">
+                    <img src="image.png" alt="TrashAway Logo" class="logo-img">
+                </a>
+                <div class="nav-links">
+                    <a href="index.html#features">Features</a>
+                    <a href="how-it-works.html">How It Works</a>
+                    <a href="about-us.html">About Us</a>
+                    <a href="pricing.html">Pricing</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="contact-us.html">Contact</a>
+                </div>
+                <div class="island-right">
+                    <a href="login.html" class="btn-pill">Login</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div style="height: 100px;"></div>
+
+    <section class="section" style="padding-top: 60px;">
+        <h1 class="section-title reveal">Get in Touch</h1>
+        <p class="section-subtitle reveal">We'd love to hear from you. Reach out to us anytime.</p>
+    </section>
+
+    <div class="contact-section">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <div>
+                    <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 12px;">Let's Connect</h2>
+                    <p style="opacity: 0.7; line-height: 1.6; margin-bottom: 20px;">Have questions about TrashAway? Want to report a business opportunity? Or just want to say hello? Fill out the form and we'll get back to you as soon as possible.</p>
+                </div>
+
+                <div class="contact-method reveal">
+                    <div class="contact-method-icon"><i data-lucide="map-pin"></i></div>
+                    <div class="contact-method-content">
+                        <h3>Visit Us</h3>
+                        <p>Legit Hub, Bodija</p>
+                        <p>Ibadan, Nigeria</p>
+                    </div>
+                </div>
+
+                <div class="contact-method reveal">
+                    <div class="contact-method-icon"><i data-lucide="phone"></i></div>
+                    <div class="contact-method-content">
+                        <h3>Call Us</h3>
+                        <p>Available 24/7</p>
+                        <a href="tel:+2349169130351">+234 (0) 916 913 0351</a>
+                    </div>
+                </div>
+
+                <div class="contact-method reveal">
+                    <div class="contact-method-icon"><i data-lucide="mail"></i></div>
+                    <div class="contact-method-content">
+                        <h3>Email Us</h3>
+                        <p>Response within 24 hours</p>
+                        <a href="mailto:oguntolaabdulmalik20@gmail.com">oguntolaabdulmalik20@gmail.com</a>
+                    </div>
+                </div>
+
+                <div class="contact-method reveal">
+                    <div class="contact-method-icon"><i data-lucide="clock"></i></div>
+                    <div class="contact-method-content">
+                        <h3>Business Hours</h3>
+                        <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                        <p>Saturday: 10:00 AM - 4:00 PM</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="contact-form-wrapper reveal">
+                    <h3 style="font-size: 22px; font-weight: 800; margin-bottom: 24px;">Send us a Message</h3>
+
+                    <div class="success-message" id="successMessage">
+                        ✓ Thank you! Your message has been sent successfully. We'll get back to you soon.
+                    </div>
+
+                    <form onsubmit="handleSubmit(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" placeholder="John" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" placeholder="Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" placeholder="+234 (0) 916 913 0351" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <select required>
+                                <option value="">Select a subject...</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="support">Support Request</option>
+                                <option value="business">Business Partnership</option>
+                                <option value="collector">Become a Collector</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea placeholder="Tell us more about your inquiry..." required></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>
+                                    <input type="checkbox" required style="width: auto; margin-right: 8px;">
+                                    I agree to the terms and privacy policy
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="btn-primary">Send Message →</button>
+                            <button type="reset" class="btn-ghost">Clear</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="reveal" style="text-align: center; margin-top: 30px;">
+                    <p style="font-size: 14px; opacity: 0.7; margin-bottom: 16px;">Follow us on social media</p>
+                    <div class="social-links">
+                        <a href="#" title="Twitter"><i data-lucide="twitter"></i></a>
+                        <a href="#" title="Facebook"><i data-lucide="facebook"></i></a>
+                        <a href="#" title="Instagram"><i data-lucide="instagram"></i></a>
+                        <a href="#" title="LinkedIn"><i data-lucide="linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="section" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #000; text-align: center;">
+        <h2 style="font-size: 48px; font-weight: 800; margin-bottom: 20px;">Join Our Community</h2>
+        <p style="font-size: 18px; margin-bottom: 40px; opacity: 0.9;">Be part of the waste management revolution in Nigeria.</p>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <a href="signup.html" class="btn-white">Create Account</a>
+            <a href="how-it-works.html" class="btn-ghost" style="background: transparent; border: 2px solid #000; color: #000;">Learn More</a>
+        </div>
+    </section>
+
+    <footer style="background: var(--bg); border-top: 1px solid var(--glass-border); padding: 60px 10% 20px; text-align: center;">
+        <p style="opacity: 0.6;">© 2026 TrashAway. Transforming waste management in Nigeria.</p>
+    </footer>
+
+    <script>
+        document.body.classList.add('light-theme');
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            document.getElementById('successMessage').style.display = 'block';
+            event.target.reset();
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+        }
+
+        function initCursor() {
+            const cursor = document.getElementById('custom-cursor');
+            if (!cursor || window.innerWidth <= 768) return;
+            
+            document.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+        }
+
+        function initReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.08 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            initCursor();
+            initReveal();
+        });
+
+
+    </script>
+
+</body>
+</html>
