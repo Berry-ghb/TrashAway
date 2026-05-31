@@ -103,7 +103,7 @@
             <a href="collector-profile.html" class="nav-item">
                 <i data-lucide="settings"></i> Company Profile
             </a>
-            <a href="contact-us.html" class="nav-item">
+            <a href="collector-support.html" class="nav-item">
                 <i data-lucide="help-circle"></i> Support
             </a>
         </nav>
@@ -116,7 +116,7 @@
                     <span>Verified Collector</span>
                 </div>
             </div>
-            <button class="btn-pill logout-btn" onclick="logout('index.html')" style="width:100%; margin-top: 18px;">Sign Out</button>
+            <button class="btn-outline logout-btn" onclick="logout('index.html')" style="width:100%; margin-top: 18px;">Sign Out</button>
         </div>
     </aside>
 
@@ -323,8 +323,8 @@
                     <small>${req.pickupDay} at ${req.pickupTime} • ${req.phone}</small>
                 </div>
                 <div class="job-actions">
-                    <button onclick="acceptRequest('${req.id}')" class="btn-pill" style="background: var(--primary); color: #fff; padding: 8px 16px; font-size: 12px;">Accept</button>
-                    <button onclick="viewDetails('${req.id}')" class="btn-pill" style="background: transparent; border: 1px solid var(--glass-border); padding: 8px 16px; font-size: 12px;">Details</button>
+                    <button onclick="acceptRequest('${req.id}')" class="btn-primary" style="padding: 8px 16px; font-size: 12px;">Accept</button>
+                    <button onclick="viewDetails('${req.id}')" class="btn-outline" style="padding: 8px 16px; font-size: 12px;">Details</button>
                 </div>`;
             container.appendChild(card);
         });

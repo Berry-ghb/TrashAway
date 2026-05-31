@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support | Collector Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="firebase.js"></script>
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="help-circle"></i></div>
+
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+    <i data-lucide="menu"></i>
+</button>
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="dashboard-container">
+    <aside class="sidebar" id="sidebar">
+        <a href="collector-dashboard.html" class="sidebar-logo">
+            <img src="image.png" alt="TrashAway Logo">
+            <span>TrashAway</span>
+        </a>
+
+        <div style="margin-bottom: 20px;">
+            <span class="collector-badge"><i data-lucide="truck" style="width:12px; height:12px;"></i> Collector Portal</span>
+        </div>
+
+        <nav>
+            <a href="collector-dashboard.html" class="nav-item">
+                <i data-lucide="layout-dashboard"></i> Overview
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="clipboard-list"></i> Job Requests
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="map-pin"></i> My Route
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="banknote"></i> Earnings
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="bar-chart-2"></i> Reports
+            </a>
+            <a href="collector-profile.html" class="nav-item">
+                <i data-lucide="settings"></i> Company Profile
+            </a>
+            <a href="collector-support.html" class="nav-item active">
+                <i data-lucide="help-circle"></i> Support
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" style="background: var(--primary);">G</div>
+                <div class="sidebar-user-info">
+                    <strong>GreenMove Ltd</strong>
+                    <span>Verified Collector</span>
+                </div>
+            </div>
+            <button class="btn-outline logout-btn" onclick="logout('index.html')" style="width:100%; margin-top: 18px;">Sign Out</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="dash-header">
+            <div>
+                <h2 style="font-size: clamp(24px, 3.5vw, 32px); margin: 0; color: var(--primary);">Support</h2>
+                <p style="color: var(--text-muted); font-size: 13px; font-weight: 600; margin-top: 8px;">Get help for issues, payouts, or account support without leaving the dashboard.</p>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="max-width: 840px; margin-bottom: 24px;">
+            <h3 style="margin-top:0;">Contact Support</h3>
+            <p style="color: var(--text-muted);">Submit a request and our support team will get back to you within 24 hours.</p>
+
+            <div style="margin-top:18px; display:flex; gap:12px; flex-direction:column;">
+                <input id="support-subject" class="input-field" placeholder="Subject" />
+                <textarea id="support-message" class="input-field" rows="6" placeholder="Describe your issue or question"></textarea>
+                <div style="display:flex; gap:12px; justify-content:flex-end;">
+                    <button id="support-submit" class="btn-primary">Send Request</button>
+                </div>
+            </div>
+
+            <div id="support-result" style="margin-top:16px; display:none;"></div>
+        </div>
+
+    </main>
+</div>
+
+<script type="module">
+    import { auth, db } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { logout } from './app-utils.js';
+
+    lucide.createIcons();
+
+    const cursor = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+    });
+
+    document.getElementById('support-submit').addEventListener('click', async () => {
+        const subject = document.getElementById('support-subject').value.trim();
+        const message = document.getElementById('support-message').value.trim();
+        const resultEl = document.getElementById('support-result');
+        if (!subject || !message) {
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Please fill subject and message.';
+            return;
+        }
+        try {
+            await addDoc(collection(db, 'collector-support'), {
+                subject, message, createdAt: serverTimestamp(), status: 'open'
+            });
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Support request submitted. We will reply soon.';
+            document.getElementById('support-subject').value = '';
+            document.getElementById('support-message').value = '';
+        } catch (err) {
+            console.error(err);
+            resultEl.style.display = 'block';
+            resultEl.textContent = 'Failed to submit. Try again later.';
+        }
+    });
+
+    window.toggleSidebar = function () {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+
+    window.logout = logout;
+</script>
+
+</body>
+</html>

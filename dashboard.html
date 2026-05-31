@@ -69,7 +69,7 @@
                 <h1 id="dashboard-greeting">Good morning</h1>
                 <p style="color: var(--text-muted); font-size: 13px; font-weight: 600; margin-top: 8px;">Manage your requests, wallet, and profile from one place.</p>
             </div>
-            <a href="request-pickup.html" class="btn-pill" style="padding: 13px 26px;">+ Request Pickup</a>
+            <a href="request-pickup.html" class="btn-outline" style="padding: 13px 26px;">+ Request Pickup</a>
         </div>
 
         <!-- STATS -->
@@ -103,7 +103,7 @@
                     <p style="margin:0; color: var(--text-muted);">Manage your requests, history, and profile from one place.</p>
                 </div>
                 <div class="action-grid" style="display:flex; gap:12px; flex-wrap:wrap; justify-content:flex-end;">
-                    <a href="request-pickup.html" class="btn-pill">Request Pickup</a>
+                    <a href="request-pickup.html" class="btn-outline">Request Pickup</a>
                     <a href="request-history.html" class="btn-outline">View History</a>
                     <a href="profile.html" class="btn-ghost">Profile</a>
                 </div>
@@ -272,6 +272,8 @@
         document.getElementById('sidebar').classList.toggle('open');
         document.getElementById('overlay').classList.toggle('open');
     }
+    // expose to global so inline onclick works (module scope isn't global)
+    window.toggleSidebar = toggleSidebar;
 </script>
 
 </body>

@@ -26,7 +26,7 @@
                     <a href="contact-us.html">Contact</a>
                 </div>
                 <div class="island-right">
-                    <a href="dashboard.html" class="btn-pill">My Dashboard</a>
+                    <a href="dashboard.html" class="btn-outline">My Dashboard</a>
                 </div>
             </div>
         </nav>
@@ -34,7 +34,7 @@
 
     <main class="section" style="max-width: 1080px; margin: 0 auto; padding: 70px 20px 120px;">
         <div class="hero-content" style="max-width: 940px; margin: 0 auto 40px; text-align: center;">
-            <div class="badge">📋 Track your pickup requests</div>
+            
             <h1>My Request History</h1>
             <p class="hero-p">View all your pickup requests, their current status, and track your waste collection history.</p>
         </div>
@@ -42,7 +42,7 @@
         <div class="glass-panel" style="padding: 36px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
                 <h3 style="color: var(--text); font-size: 18px; font-weight: 800;">Your Pickup Requests</h3>
-                <a href="request-pickup.html" class="btn-pill" style="padding: 10px 20px; font-size: 14px;">+ New Request</a>
+                <a href="request-pickup.html" class="btn-outline" style="padding: 10px 20px; font-size: 14px;">+ New Request</a>
             </div>
 
             <div id="request-history-list"></div>
@@ -58,7 +58,11 @@
         </div>
     </main>
 
-    <script>
+    <script type="module">
+        import { auth, db } from './firebase.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
         lucide.createIcons();
 
         const cursor = document.getElementById('custom-cursor');
@@ -66,7 +70,7 @@
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
-        document.querySelectorAll('a, button, input, select, textarea, .btn-pill, .nav-item, .glass-panel').forEach(el => {
+        document.querySelectorAll('a, button, input, select, textarea, .nav-item, .glass-panel').forEach(el => {
             el.addEventListener('mouseenter', () => {
                 cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
                 cursor.style.filter = 'drop-shadow(0 0 18px var(--primary-glow))';
@@ -79,12 +83,27 @@
 
         document.body.classList.add('light-theme');
 
-        function renderRequestHistory() {
-            const requests = JSON.parse(localStorage.getItem('trashaway-requests') || '[]');
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const q = query(collection(db, 'requests'), where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
+            onSnapshot(q, (snapshot) => {
+                const requests = [];
+                snapshot.forEach(doc => requests.push({ id: doc.id, ...doc.data() }));
+                renderRequestHistory(requests);
+            }, (err) => {
+                console.error('Request history listener error:', err);
+            });
+        });
+
+        function renderRequestHistory(requests) {
             const container = document.getElementById('request-history-list');
             const emptyState = document.getElementById('empty-state');
 
-            if (!requests.length) {
+            if (!requests || !requests.length) {
                 container.innerHTML = '';
                 emptyState.style.display = 'block';
                 return;
@@ -93,37 +112,43 @@
             emptyState.style.display = 'none';
             container.innerHTML = '';
 
-            requests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(req => {
+            requests.forEach(req => {
                 const statusClass = req.status === 'complete' ? 'status-complete' : req.status === 'assigned' ? 'status-assigned' : 'status-pending';
                 const statusText = req.status === 'complete' ? 'Completed' : req.status === 'assigned' ? 'Assigned' : 'Pending';
-                const createdDate = new Date(req.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+
+                let createdDate;
+                try {
+                    if (req.createdAt && typeof req.createdAt.toDate === 'function') {
+                        createdDate = req.createdAt.toDate();
+                    } else {
+                        createdDate = new Date(req.createdAt);
+                    }
+                } catch (e) {
+                    createdDate = new Date();
+                }
+
+                const createdLabel = createdDate.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
                 const card = document.createElement('div');
-                card.className = 'glass-panel';
+                card.className = 'glass-panel request-card';
                 card.style.cssText = 'padding: 24px; margin-bottom: 16px; border-radius: 16px;';
                 card.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
-                        <div>
-                            <h4 style="color: var(--text); font-size: 16px; font-weight: 800; margin-bottom: 4px;">${req.address}</h4>
-                            <p style="color: var(--text-muted); font-size: 14px;">${req.city}, ${req.state} · ${req.wasteType} · ${req.bagCount}</p>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 12px;">
+                        <div style="flex:1; min-width: 0;">
+                            <h4 style="color: var(--text); font-size: 16px; font-weight: 800; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${req.address || req.area || 'Pickup location'}</h4>
+                            <p style="color: var(--text-muted); font-size: 14px; overflow: hidden; text-overflow: ellipsis;">${req.city || ''}, ${req.state || ''} · ${req.wasteType || 'General'} · ${req.bagCount || ''}</p>
                         </div>
-                        <span class="activity-badge ${statusClass}">${statusText}</span>
+                        <span class="activity-badge ${statusClass}" style="margin-left:12px; white-space:nowrap;">${statusText}</span>
                     </div>
-                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
-                        <div style="flex: 1;">
-                            <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;"><strong>Requested:</strong> ${req.pickupDay} at ${req.pickupTime}</p>
-                            <p style="color: var(--text-muted); font-size: 13px;"><strong>Submitted:</strong> ${createdDate}</p>
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 220px; margin-right: 12px;">
+                            <p style="color: var(--text); font-size: 14px; margin-bottom: 8px;"><strong>Requested:</strong> ${req.pickupDay || ''} at ${req.pickupTime || ''}</p>
+                            <p style="color: var(--text-muted); font-size: 13px;"><strong>Submitted:</strong> ${createdLabel}</p>
                             ${req.notes ? `<p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;"><strong>Notes:</strong> ${req.notes}</p>` : ''}
                         </div>
-                        <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                        <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end; min-width:120px;">
                             <div style="font-size: 12px; color: var(--text-muted); text-align: right;">
-                                <div>Request ID: ${req.id.slice(-8)}</div>
+                                <div>Request ID: ${String(req.id).slice(-8)}</div>
                             </div>
                         </div>
                     </div>`;
@@ -133,21 +158,6 @@
 
             lucide.createIcons();
         }
-
-        renderRequestHistory();
-
-        document.querySelectorAll('a, button').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                const cursor = document.getElementById('custom-cursor');
-                cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
-                cursor.style.filter = 'drop-shadow(0 0 18px var(--primary-glow))';
-            });
-            el.addEventListener('mouseleave', () => {
-                const cursor = document.getElementById('custom-cursor');
-                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-                cursor.style.filter = 'drop-shadow(0 0 10px var(--primary-glow))';
-            });
-        });
     </script>
 </body>
 </html>
