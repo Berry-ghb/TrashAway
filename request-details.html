@@ -11,17 +11,20 @@
 <body>
   <div id="custom-cursor"><i data-lucide="package"></i></div>
   <main class="section" style="max-width:760px; margin:80px auto 120px;">
-    <div class="glass-panel" style="padding:24px;">
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+    <div class="glass-panel" style="padding:28px 30px;">
+      <div class="request-detail-header">
         <div>
-          <h3 id="title" style="margin:0; font-size:20px;">Request Details</h3>
-          <div id="sub" style="color:var(--text-muted); font-size:13px; margin-top:6px;">Full pickup information</div>
+          <h2>Request Details</h2>
+          <p>Full pickup information and contact details for this request.</p>
         </div>
-        <a href="collector-dashboard.html" class="btn-ghost">Back</a>
+        <div class="request-detail-status">
+          <span id="status-badge" class="activity-badge status-pending">Pending</span>
+          <a href="collector-dashboard.html" class="btn-ghost">Back</a>
+        </div>
       </div>
 
-      <div id="content" style="margin-top:16px;"></div>
-      <div id="actions" style="margin-top:18px; display:flex; gap:12px; justify-content:flex-end;"></div>
+      <div id="content"></div>
+      <div id="actions" class="page-actions"></div>
     </div>
   </main>
 
@@ -58,14 +61,43 @@
 
     function render(r) {
       const created = r.createdAt && typeof r.createdAt.toDate === 'function' ? r.createdAt.toDate() : new Date(r.createdAt);
+      const statusClass = r.status === 'complete' ? 'status-complete' : r.status === 'assigned' ? 'status-assigned' : 'status-pending';
+      const statusText = r.status === 'complete' ? 'Completed' : r.status === 'assigned' ? 'Accepted' : 'Pending';
+      const statusBadge = document.getElementById('status-badge');
+      statusBadge.textContent = statusText;
+      statusBadge.className = `activity-badge ${statusClass}`;
+
       document.getElementById('content').innerHTML = `
-        <h4 style="margin-top:0;">${r.address || r.area || 'Pickup location'}</h4>
-        <p style="color:var(--text-muted); margin:6px 0;">${r.city || ''}, ${r.state || ''} · ${r.wasteType || 'General'} · ${r.bagCount || ''}</p>
-        <p><strong>Requested:</strong> ${r.pickupDay || ''} • ${r.pickupTime || ''}</p>
-        <p><strong>Submitted:</strong> ${created.toLocaleString()}</p>
-        ${r.notes ? `<p><strong>Notes:</strong> ${r.notes}</p>` : ''}
-        <p><strong>Contact:</strong> ${r.name || ''} • ${r.phone || ''} • ${r.email || ''}</p>
-        <p style="color:var(--text-muted); font-size:13px;">Request ID: ${r.id}</p>
+        <div class="request-detail-grid">
+          <div class="request-detail-card">
+            <h4>Pickup location</h4>
+            <p>${r.address || r.area || 'Pickup location'}</p>
+            <p style="margin-top: 10px; color: var(--text-muted);">${r.city || ''}, ${r.state || ''}</p>
+          </div>
+          <div class="request-detail-card">
+            <h4>Waste type</h4>
+            <p>${r.wasteType || 'Household (General)'}</p>
+            <p style="margin-top: 10px; color: var(--text-muted);">${r.bagCount || '—'}</p>
+          </div>
+          <div class="request-detail-card">
+            <h4>Pickup window</h4>
+            <p>${r.pickupDay || 'Scheduled day'} • ${r.pickupTime || 'Time slot'}</p>
+          </div>
+          <div class="request-detail-card">
+            <h4>Submitted</h4>
+            <p>${created.toLocaleString()}</p>
+          </div>
+        </div>
+
+        <div class="request-detail-card" style="margin-top:24px;">
+          <h4>Contact information</h4>
+          <p>${r.name || '—'}</p>
+          <p style="margin-top:10px; color: var(--text-muted);">${r.phone || '—'} • ${r.email || '—'}</p>
+        </div>
+
+        ${r.notes ? `<div class="request-detail-card" style="margin-top:24px;"><h4>Notes</h4><p>${r.notes}</p></div>` : ''}
+
+        <p style="margin-top:18px; color:var(--text-muted); font-size:13px;">Request ID: ${r.id}</p>
       `;
 
       const actions = document.getElementById('actions');

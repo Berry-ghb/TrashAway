@@ -10,25 +10,64 @@
 <body>
   <div id="custom-cursor"><i data-lucide="life-buoy"></i></div>
 
-  <div class="nav-container">
-    <nav class="dynamic-island">
-      <div class="island-content">
-        <a href="dashboard.html" class="logo-brand">
-          <img src="image.png" alt="TrashAway Logo" class="logo-img">
+  <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+    <i data-lucide="menu"></i>
+  </button>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="dashboard-container">
+    <aside class="sidebar" id="sidebar">
+      <a href="dashboard.html" class="sidebar-logo">
+        <img src="image.png" alt="TrashAway Logo">
+        <span>TrashAway</span>
+      </a>
+      <nav>
+        <a href="dashboard.html" class="nav-item">
+          <i data-lucide="layout-dashboard"></i> Overview
         </a>
-        <div class="island-right">
-          <a href="dashboard.html" class="btn-outline">Back to Dashboard</a>
+        <a href="my-pickups.html" class="nav-item">
+          <i data-lucide="truck"></i> My Pickups
+        </a>
+        <a href="request-history.html" class="nav-item">
+          <i data-lucide="history"></i> Request History
+        </a>
+        <a href="support.html" class="nav-item active">
+          <i data-lucide="life-buoy"></i> Support
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="calendar"></i> Schedule
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="wallet"></i> Payments
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="award"></i> Eco Points
+        </a>
+        <a href="profile.html" class="nav-item">
+          <i data-lucide="user"></i> Profile
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">U</div>
+          <div class="sidebar-user-info">
+            <strong>Your Account</strong>
+            <span>Signed in</span>
+          </div>
         </div>
       </div>
-    </nav>
-  </div>
+    </aside>
 
-  <main class="section" style="max-width:820px; margin:120px auto 100px;">
-    <div class="glass-panel" style="padding:36px;">
-      <h1>Support & Feedback</h1>
-      <p class="hero-p">Report an issue or send feedback. We'll receive your message at our support inbox and reply to guide you.</p>
+    <main class="main-content">
+      <div class="dash-header">
+        <div class="page-hero">
+          <h1 class="page-title">Support & Feedback</h1>
+          <p class="hero-p">Report an issue or send feedback. We'll receive your message at our support inbox and reply to guide you.</p>
+        </div>
+      </div>
 
-      <form id="support-form" style="margin-top:18px;">
+      <div class="glass-panel" style="max-width:760px; margin:0 auto; padding:36px;">
+        <form id="support-form" style="margin-top:18px;">
         <div class="form-group">
           <label>Your name</label>
           <input id="name" class="input-field" placeholder="Your name" required>
@@ -55,16 +94,25 @@
       <p style="margin-top:18px; color:var(--text-muted); font-size:13px;">Note: This will open your email client so you can send the report directly to our support inbox.</p>
     </div>
   </main>
+</div>
 
   <script type="module">
     import { auth } from './firebase.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     lucide.createIcons();
 
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+    window.toggleSidebar = toggleSidebar;
+
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.body.classList.add('hide-pill');
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
       }
+      document.body.classList.add('hide-pill');
     });
 
     document.getElementById('support-form').addEventListener('submit', (e) => {

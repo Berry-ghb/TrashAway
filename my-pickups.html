@@ -16,13 +16,57 @@
     </button>
     <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-    <main class="section" style="max-width: 920px; margin: 80px auto 120px;">
-        <div class="hero-content" style="max-width:760px; margin:0 auto 18px; text-align:center;">
-            <h2 style="font-size:32px; font-weight:800; margin-bottom:6px;">My Pickups</h2>
-            <p class="hero-p">Pickup requests that have been accepted by a collector are shown here.</p>
-        </div>
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <a href="dashboard.html" class="sidebar-logo">
+                <img src="image.png" alt="TrashAway Logo">
+                <span>TrashAway</span>
+            </a>
+            <nav>
+                <a href="dashboard.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i> Overview
+                </a>
+                <a href="my-pickups.html" class="nav-item active">
+                    <i data-lucide="truck"></i> My Pickups
+                </a>
+                <a href="request-history.html" class="nav-item">
+                    <i data-lucide="history"></i> Request History
+                </a>
+                <a href="support.html" class="nav-item">
+                    <i data-lucide="life-buoy"></i> Support
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="calendar"></i> Schedule
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="wallet"></i> Payments
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="award"></i> Eco Points
+                </a>
+                <a href="profile.html" class="nav-item">
+                    <i data-lucide="user"></i> Profile
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar">U</div>
+                    <div class="sidebar-user-info">
+                        <strong>Your Account</strong>
+                        <span>Signed in</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
 
-        <div class="glass-panel" style="padding:28px;">
+        <main class="main-content">
+            <div class="dash-header">
+                <div class="page-hero">
+                    <h1 class="page-title">My Pickups</h1>
+                    <p class="hero-p">Pickup requests that have been accepted by a collector are shown here.</p>
+                </div>
+            </div>
+            <div class="glass-panel" style="padding:28px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
                 <h4 style="margin:0; font-size:16px; font-weight:800;">Accepted Pickups</h4>
             </div>
@@ -32,6 +76,7 @@
             </div>
         </div>
     </main>
+</div>
 
     <script type="module">
         import { auth, db } from './firebase.js';
@@ -91,7 +136,11 @@
             lucide.createIcons();
         }
 
-        function toggleSidebar() { document.getElementById('overlay').classList.toggle('open'); document.body.classList.toggle('no-scroll'); }
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('open');
+            document.body.classList.toggle('no-scroll');
+        }
         window.toggleSidebar = toggleSidebar;
     </script>
 </body>

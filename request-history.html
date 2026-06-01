@@ -12,38 +12,68 @@
 <body>
     <div id="custom-cursor"><i data-lucide="history"></i></div>
 
-    <div class="nav-container">
-        <nav class="dynamic-island">
-            <div class="island-content">
-                <a href="index.html" class="logo-brand">
-                    <img src="image.png" alt="TrashAway Logo" class="logo-img">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+        <i data-lucide="menu"></i>
+    </button>
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <a href="dashboard.html" class="sidebar-logo">
+                <img src="image.png" alt="TrashAway Logo">
+                <span>TrashAway</span>
+            </a>
+            <nav>
+                <a href="dashboard.html" class="nav-item">
+                    <i data-lucide="layout-dashboard"></i> Overview
                 </a>
-                <div class="nav-links">
-                    <a href="how-it-works.html">How It Works</a>
-                    <a href="about-us.html">About Us</a>
-                    <a href="pricing.html">Pricing</a>
-                    <a href="faq.html">FAQ</a>
-                    <a href="contact-us.html">Contact</a>
-                </div>
-                <div class="island-right">
-                    <a href="dashboard.html" class="btn-outline">My Dashboard</a>
+                <a href="my-pickups.html" class="nav-item">
+                    <i data-lucide="truck"></i> My Pickups
+                </a>
+                <a href="request-history.html" class="nav-item active">
+                    <i data-lucide="history"></i> Request History
+                </a>
+                <a href="support.html" class="nav-item">
+                    <i data-lucide="life-buoy"></i> Support
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="calendar"></i> Schedule
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="wallet"></i> Payments
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="award"></i> Eco Points
+                </a>
+                <a href="profile.html" class="nav-item">
+                    <i data-lucide="user"></i> Profile
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar">U</div>
+                    <div class="sidebar-user-info">
+                        <strong>Your Account</strong>
+                        <span>Signed in</span>
+                    </div>
                 </div>
             </div>
-        </nav>
-    </div>
+        </aside>
 
-    <main class="section" style="max-width: 1080px; margin: 0 auto; padding: 70px 20px 120px;">
-            <div class="hero-content" style="max-width: 760px; margin: 0 auto 24px; text-align: center;">
-            
-            <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 6px;">My Request History</h2>
-            <p class="hero-p">View your pickup requests, current status, and collection history.</p>
-        </div>
-
-        <div class="glass-panel" style="padding: 36px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
-                <h3 style="color: var(--text); font-size: 18px; font-weight: 800;">Your Pickup Requests</h3>
-                <a href="request-pickup.html" class="btn-outline" style="padding: 10px 20px; font-size: 14px;">+ New Request</a>
+        <main class="main-content">
+            <div class="dash-header">
+                <div class="page-hero">
+                    <h1 class="page-title">My Request History</h1>
+                    <p class="hero-p">View your pickup requests, current status, and collection history.</p>
+                </div>
+                <a href="request-pickup.html" class="btn-primary">+ New Request</a>
             </div>
+
+            <div class="glass-panel" style="padding: 36px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+                    <h3 style="color: var(--text); font-size: 18px; font-weight: 800;">Your Pickup Requests</h3>
+                    <a href="request-pickup.html" class="btn-primary" style="padding: 10px 20px; font-size: 14px;">+ New Request</a>
+                </div>
 
             <div id="request-history-list"></div>
 
@@ -57,6 +87,7 @@
             </div>
         </div>
     </main>
+</div>
 
     <script type="module">
         import { auth, db } from './firebase.js';
@@ -64,6 +95,12 @@
         import { collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         lucide.createIcons();
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('open');
+        }
+        window.toggleSidebar = toggleSidebar;
 
         const cursor = document.getElementById('custom-cursor');
         document.addEventListener('mousemove', e => {
