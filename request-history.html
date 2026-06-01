@@ -89,10 +89,27 @@
                 return;
             }
 
-            const q = query(collection(db, 'requests'), where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
+            // Hide pill-style buttons when user is signed in
+            document.body.classList.add('hide-pill');
+
+            // Query without server-side orderBy to avoid requiring a composite index.
+            const q = query(collection(db, 'requests'), where('userId', '==', user.uid));
             onSnapshot(q, (snapshot) => {
                 const requests = [];
                 snapshot.forEach(doc => requests.push({ id: doc.id, ...doc.data() }));
+
+                // Sort client-side by createdAt (descending) if available
+                requests.sort((a, b) => {
+                    const getTime = (r) => {
+                        try {
+                            if (!r || !r.createdAt) return 0;
+                            if (typeof r.createdAt.toDate === 'function') return r.createdAt.toDate().getTime();
+                            return new Date(r.createdAt).getTime();
+                        } catch (e) { return 0; }
+                    };
+                    return getTime(b) - getTime(a);
+                });
+
                 renderRequestHistory(requests);
             }, (err) => {
                 console.error('Request history listener error:', err);

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Top Up Wallet | TrashAway</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div id="custom-cursor"><i data-lucide="wallet"></i></div>
+
+  <div class="nav-container">
+    <nav class="dynamic-island">
+      <div class="island-content">
+        <a href="dashboard.html" class="logo-brand">
+          <img src="image.png" alt="TrashAway Logo" class="logo-img">
+        </a>
+        <div class="island-right">
+          <a href="dashboard.html" class="btn-outline">Back</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <main class="section" style="max-width:820px; margin:120px auto 100px;">
+    <div class="glass-panel" style="padding:36px;">
+      <h1>Top Up Wallet</h1>
+      <p class="hero-p">Choose a method to top up your wallet. This is a visual mock for now; payment flows will be connected later.</p>
+
+      <div style="display:flex; gap:18px; margin-top:18px; flex-wrap:wrap;">
+        <a href="#" class="btn-pill" style="min-width:260px; display:flex; align-items:center; justify-content:space-between;">
+          <span>Bank Card</span>
+          <span style="opacity:0.8;">Visa, Mastercard</span>
+        </a>
+        <a href="#" class="btn-outline" style="min-width:260px; display:flex; align-items:center; justify-content:space-between;">
+          <span>Bank Transfer</span>
+          <span style="opacity:0.8;">Account details</span>
+        </a>
+      </div>
+
+      <p style="margin-top:20px; color:var(--text-muted);">Note: The pill-style CTA is intentionally hidden for signed-in dashboards. This page will follow the dashboard look and won't show pill buttons.</p>
+    </div>
+  </main>
+
+  <script type="module">
+    import { auth } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      // hide pill-style CTAs when user is signed in
+      document.body.classList.add('hide-pill');
+    });
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>

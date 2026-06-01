@@ -252,6 +252,8 @@
                 console.error('Error loading collector data:', error);
             }
             loadRequests();
+            // hide pill-style buttons for signed-in collectors
+            document.body.classList.add('hide-pill');
         }
     });
 
@@ -355,6 +357,7 @@
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
         document.getElementById('overlay').classList.toggle('open');
+        document.body.classList.toggle('no-scroll');
     }
 
     // Expose module functions for inline event handlers.

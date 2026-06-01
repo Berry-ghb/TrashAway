@@ -38,6 +38,9 @@
             <a href="request-history.html" class="nav-item">
                 <i data-lucide="history"></i> Request History
             </a>
+            <a href="support.html" class="nav-item">
+                <i data-lucide="life-buoy"></i> Support
+            </a>
             <a href="#" class="nav-item">
                 <i data-lucide="calendar"></i> Schedule
             </a>
@@ -82,7 +85,7 @@
             <div class="stat-card">
                 <div class="stat-icon"><i data-lucide="wallet"></i></div>
                 <h4>Wallet Balance</h4>
-                <h3 id="wallet-balance">₦0</h3>
+                <h3 id="wallet-balance">₦0 <a href="topup.html" class="wallet-topup" title="Top up">+</a></h3>
             </div>
             <div class="stat-card">
                 <div class="stat-icon"><i data-lucide="award"></i></div>
@@ -174,10 +177,26 @@
             console.error('Error loading user data:', error);
         }
 
-        const requestsQuery = query(collection(db, 'requests'), where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
+        // Hide pill-style buttons when signed in
+        document.body.classList.add('hide-pill');
+
+        const requestsQuery = query(collection(db, 'requests'), where('userId', '==', user.uid));
         onSnapshot(requestsQuery, (snapshot) => {
             const requests = [];
             snapshot.forEach(docSnap => requests.push({ id: docSnap.id, ...docSnap.data() }));
+
+            // Client-side sort by createdAt (desc)
+            requests.sort((a, b) => {
+                const t = (r) => {
+                    try {
+                        if (!r || !r.createdAt) return 0;
+                        if (typeof r.createdAt.toDate === 'function') return r.createdAt.toDate().getTime();
+                        return new Date(r.createdAt).getTime();
+                    } catch (e) { return 0; }
+                };
+                return t(b) - t(a);
+            });
+
             renderDashboardRequests(requests);
         });
     });
@@ -271,6 +290,8 @@
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
         document.getElementById('overlay').classList.toggle('open');
+        // Lock page scroll while sidebar is open
+        document.body.classList.toggle('no-scroll');
     }
     // expose to global so inline onclick works (module scope isn't global)
     window.toggleSidebar = toggleSidebar;
