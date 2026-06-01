@@ -324,7 +324,7 @@
                     <span>${req.area}, ${req.city}, ${req.state} • ${req.wasteType} • ${req.bagCount}</span>
                     <small>${req.pickupDay} at ${req.pickupTime} • ${req.phone}</small>
                 </div>
-                <div class="job-actions">
+                    <div class="job-actions">
                     <button onclick="acceptRequest('${req.id}')" class="btn-primary" style="padding: 8px 16px; font-size: 12px;">Accept</button>
                     <button onclick="viewDetails('${req.id}')" class="btn-outline" style="padding: 8px 16px; font-size: 12px;">Details</button>
                 </div>`;
@@ -350,8 +350,8 @@
     }
 
     function viewDetails(requestId) {
-        // For now, just alert. Can expand to modal later.
-        alert('View details for request: ' + requestId);
+        // Navigate to details page
+        window.location.href = `request-details.html?id=${requestId}`;
     }
 
     function toggleSidebar() {

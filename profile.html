@@ -65,10 +65,11 @@
         border-radius: 50px; font-weight: 800; font-size: 14px;
         display: flex; align-items: center; gap: 10px;
         box-shadow: 0 8px 24px var(--primary-glow);
-        transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.25s ease;
         z-index: 9999;
+        opacity: 0; pointer-events: none;
     }
-    .save-toast.show { transform: translateX(-50%) translateY(0); }
+    .save-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
 
     @media (max-width: 600px) {
         .profile-grid { grid-template-columns: 1fr !important; }
@@ -100,8 +101,11 @@
             <a href="dashboard.html" class="nav-item">
                 <i data-lucide="layout-dashboard"></i> Overview
             </a>
-            <a href="#" class="nav-item">
+            <a href="my-pickups.html" class="nav-item">
                 <i data-lucide="truck"></i> My Pickups
+            </a>
+            <a href="request-history.html" class="nav-item">
+                <i data-lucide="history"></i> Request History
             </a>
             <a href="#" class="nav-item">
                 <i data-lucide="calendar"></i> Schedule
@@ -111,6 +115,9 @@
             </a>
             <a href="#" class="nav-item">
                 <i data-lucide="award"></i> Eco Points
+            </a>
+            <a href="support.html" class="nav-item">
+                <i data-lucide="life-buoy"></i> Support
             </a>
             <a href="profile.html" class="nav-item active">
                 <i data-lucide="user"></i> Profile
@@ -125,7 +132,7 @@
                     <span>Premium Plan</span>
                 </div>
             </div>
-            <button onclick="logout()" class="btn-pill" style="width: 100%; margin-top: 14px; background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.3); color: #dc2626;">Log Out</button>
+            <button onclick="logout()" class="btn-outline" style="width: 100%; margin-top: 14px; background: rgba(220, 38, 38, 0.04); border: 1px solid rgba(220, 38, 38, 0.12); color: #dc2626;">Log Out</button>
         </div>
     </aside>
 
@@ -476,6 +483,8 @@
             } catch (error) {
                 console.error('Error loading profile:', error);
             }
+                // hide pill-style CTAs for signed-in users
+                document.body.classList.add('hide-pill');
         } else {
             // Redirect to login if not authenticated
             window.location.href = 'login.html';

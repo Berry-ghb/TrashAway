@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Request Details | TrashAway</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script type="module" src="firebase.js"></script>
+</head>
+<body>
+  <div id="custom-cursor"><i data-lucide="package"></i></div>
+  <main class="section" style="max-width:760px; margin:80px auto 120px;">
+    <div class="glass-panel" style="padding:24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div>
+          <h3 id="title" style="margin:0; font-size:20px;">Request Details</h3>
+          <div id="sub" style="color:var(--text-muted); font-size:13px; margin-top:6px;">Full pickup information</div>
+        </div>
+        <a href="collector-dashboard.html" class="btn-ghost">Back</a>
+      </div>
+
+      <div id="content" style="margin-top:16px;"></div>
+      <div id="actions" style="margin-top:18px; display:flex; gap:12px; justify-content:flex-end;"></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { auth, db } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    lucide.createIcons();
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (!id) document.getElementById('content').textContent = 'No request specified.';
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = 'login.html';
+      // hide pills
+      document.body.classList.add('hide-pill');
+
+      try {
+        const ref = doc(db, 'requests', id);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+          document.getElementById('content').textContent = 'Request not found.';
+          return;
+        }
+        const r = { id: snap.id, ...snap.data() };
+        render(r);
+      } catch (err) {
+        console.error(err);
+        document.getElementById('content').textContent = 'Failed to load request.';
+      }
+    });
+
+    function render(r) {
+      const created = r.createdAt && typeof r.createdAt.toDate === 'function' ? r.createdAt.toDate() : new Date(r.createdAt);
+      document.getElementById('content').innerHTML = `
+        <h4 style="margin-top:0;">${r.address || r.area || 'Pickup location'}</h4>
+        <p style="color:var(--text-muted); margin:6px 0;">${r.city || ''}, ${r.state || ''} · ${r.wasteType || 'General'} · ${r.bagCount || ''}</p>
+        <p><strong>Requested:</strong> ${r.pickupDay || ''} • ${r.pickupTime || ''}</p>
+        <p><strong>Submitted:</strong> ${created.toLocaleString()}</p>
+        ${r.notes ? `<p><strong>Notes:</strong> ${r.notes}</p>` : ''}
+        <p><strong>Contact:</strong> ${r.name || ''} • ${r.phone || ''} • ${r.email || ''}</p>
+        <p style="color:var(--text-muted); font-size:13px;">Request ID: ${r.id}</p>
+      `;
+
+      const actions = document.getElementById('actions');
+      actions.innerHTML = '';
+      // Show Accept button only if not already assigned
+      if (r.status !== 'assigned') {
+        const btn = document.createElement('button');
+        btn.className = 'btn-primary';
+        btn.textContent = 'Accept Request';
+        btn.addEventListener('click', async () => {
+          try {
+            // mark assigned to current user (collector) — fetch collector company name if exists
+            const collectorRef = doc(db, 'collectors', auth.currentUser.uid);
+            const collectorSnap = await getDoc(collectorRef);
+            const company = collectorSnap.exists() ? collectorSnap.data().companyName || '' : '';
+            await updateDoc(doc(db, 'requests', r.id), {
+              status: 'assigned',
+              assignedTo: auth.currentUser.uid,
+              assignedAt: new Date(),
+              assignedCompanyName: company
+            });
+            alert('Request accepted.');
+            window.location.href = 'collector-dashboard.html';
+          } catch (err) { console.error(err); alert('Failed to accept request.'); }
+        });
+        actions.appendChild(btn);
+      }
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

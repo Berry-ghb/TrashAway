@@ -56,8 +56,17 @@
     </div>
   </main>
 
-  <script>
+  <script type="module">
+    import { auth } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     lucide.createIcons();
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.body.classList.add('hide-pill');
+      }
+    });
+
     document.getElementById('support-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const to = 'oguntolaabdulmalik20@gmail.com';

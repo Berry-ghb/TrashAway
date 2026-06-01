@@ -79,10 +79,11 @@
             border-radius: 50px; font-weight: 800; font-size: 14px;
             display: flex; align-items: center; gap: 10px;
             box-shadow: 0 8px 24px var(--primary-glow);
-            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.25s ease;
             z-index: 9999;
+            opacity: 0; pointer-events: none;
         }
-        .save-toast.show { transform: translateX(-50%) translateY(0); }
+        .save-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
 
         .badge-section {
             display: inline-block;
@@ -559,6 +560,8 @@
                 } catch (error) {
                     console.error('Error loading profile:', error);
                 }
+                    // hide pill CTAs for signed-in collectors
+                    document.body.classList.add('hide-pill');
             } else {
                 // Redirect to login if not authenticated
                 window.location.href = 'login.html';

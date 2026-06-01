@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>My Pickups | TrashAway</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="firebase.js"></script>
+</head>
+<body>
+    <div id="custom-cursor"><i data-lucide="truck"></i></div>
+
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+        <i data-lucide="menu"></i>
+    </button>
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <main class="section" style="max-width: 920px; margin: 80px auto 120px;">
+        <div class="hero-content" style="max-width:760px; margin:0 auto 18px; text-align:center;">
+            <h2 style="font-size:32px; font-weight:800; margin-bottom:6px;">My Pickups</h2>
+            <p class="hero-p">Pickup requests that have been accepted by a collector are shown here.</p>
+        </div>
+
+        <div class="glass-panel" style="padding:28px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+                <h4 style="margin:0; font-size:16px; font-weight:800;">Accepted Pickups</h4>
+            </div>
+            <div id="pickups-list"></div>
+            <div id="no-pickups" style="display:none; text-align:center; padding: 36px 12px;">
+                <p style="color:var(--text-muted);">No accepted pickups yet.</p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { auth, db } from './firebase.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        lucide.createIcons();
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) return window.location.href = 'login.html';
+            // hide pill CTAs when signed in
+            document.body.classList.add('hide-pill');
+
+            const q = query(collection(db, 'requests'), where('userId', '==', user.uid));
+            onSnapshot(q, (snap) => {
+                const items = [];
+                snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                // filter to accepted (assigned)
+                const accepted = items.filter(r => r.status === 'assigned');
+                accepted.sort((a,b)=>{ const ta = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : (new Date(a.createdAt)).getTime(); const tb = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : (new Date(b.createdAt)).getTime(); return tb - ta; });
+                renderPickups(accepted);
+            });
+        });
+
+        function renderPickups(pickups) {
+            const container = document.getElementById('pickups-list');
+            const noEl = document.getElementById('no-pickups');
+            if (!pickups || !pickups.length) {
+                container.innerHTML = '';
+                noEl.style.display = 'block';
+                return;
+            }
+            noEl.style.display = 'none';
+            container.innerHTML = '';
+            pickups.forEach(r => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel request-card';
+                card.style.cssText = 'padding:18px; margin-bottom:14px; border-radius:12px;';
+                const created = r.createdAt && typeof r.createdAt.toDate === 'function' ? r.createdAt.toDate() : new Date(r.createdAt);
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                        <div style="flex:1; min-width:0;">
+                            <h4 style="margin:0; font-size:16px; font-weight:800;">${r.address || r.area || 'Pickup location'}</h4>
+                            <p style="margin:6px 0; color:var(--text-muted);">${r.city || ''}, ${r.state || ''} · ${r.wasteType || 'General'}</p>
+                        </div>
+                        <div style="text-align:right; min-width:120px;">
+                            <div style="font-size:13px; color:var(--text-muted);">Assigned to</div>
+                            <div style="font-weight:800;">${r.assignedCompanyName || 'Collector'}</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                        <div style="color:var(--text-muted); font-size:13px;">${r.pickupDay || ''} • ${r.pickupTime || ''} · ${created.toLocaleString()}</div>
+                        <a href="request-details.html?id=${r.id}" class="btn-outline">Details</a>
+                    </div>`;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function toggleSidebar() { document.getElementById('overlay').classList.toggle('open'); document.body.classList.toggle('no-scroll'); }
+        window.toggleSidebar = toggleSidebar;
+    </script>
+</body>
+</html>

@@ -352,6 +352,9 @@ h1 { font-size: clamp(60px, 10vw, 120px); font-weight: 800; line-height: 0.85; l
 .hamburger:hover { background: var(--primary); color: #000; }
 .hamburger i { width: 24px; height: 24px; }
 
+/* ensure the hamburger stays above overlays so it can be used to close the sidebar */
+.hamburger { z-index: 10005 !important; }
+
 /* --- SIDEBAR OVERLAY --- */
 .sidebar-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5);

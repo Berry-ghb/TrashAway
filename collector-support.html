@@ -110,6 +110,8 @@
             window.location.href = 'login.html';
             return;
         }
+        // hide pill CTAs for signed-in collectors
+        document.body.classList.add('hide-pill');
     });
 
     document.getElementById('support-submit').addEventListener('click', async () => {
@@ -122,17 +124,16 @@
             return;
         }
         try {
-            await addDoc(collection(db, 'collector-support'), {
-                subject, message, createdAt: serverTimestamp(), status: 'open'
-            });
+            // Open mail client addressed to support inbox so team receives email directly
+            const to = 'oguntolaabdulmalik20@gmail.com';
+            const body = encodeURIComponent(message + '\n\n-- Collector Portal');
+            window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${body}`;
             resultEl.style.display = 'block';
-            resultEl.textContent = 'Support request submitted. We will reply soon.';
-            document.getElementById('support-subject').value = '';
-            document.getElementById('support-message').value = '';
+            resultEl.textContent = 'Opening mail client to send support message.';
         } catch (err) {
             console.error(err);
             resultEl.style.display = 'block';
-            resultEl.textContent = 'Failed to submit. Try again later.';
+            resultEl.textContent = 'Failed to open mail client. Try again later.';
         }
     });
 
