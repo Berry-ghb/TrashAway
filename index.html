@@ -137,56 +137,6 @@
         <h2 class="section-title reveal">How It Works</h2>
         <p class="section-subtitle reveal">Follow six clear steps from signup to sustainable disposal.</p>
 
-        <div class="process-visual reveal" style="margin-bottom: 60px;">
-            <div class="process-step">
-                <div class="process-icon"><i data-lucide="user-plus"></i></div>
-                <div>
-                    <h4>Sign Up</h4>
-                    <p>Create your free account and set up your user profile.</p>
-                </div>
-            </div>
-            <div class="process-connector"></div>
-            <div class="process-step">
-                <div class="process-icon"><i data-lucide="map-pin"></i></div>
-                <div>
-                    <h4>Add Address</h4>
-                    <p>Share your pickup location so our agents can reach you fast.</p>
-                </div>
-            </div>
-            <div class="process-connector"></div>
-            <div class="process-step">
-                <div class="process-icon"><i data-lucide="calendar-check"></i></div>
-                <div>
-                    <h4>Choose Pickup</h4>
-                    <p>Pick a one-time or recurring plan that matches your routine.</p>
-                </div>
-            </div>
-            <div class="process-connector"></div>
-            <div class="process-step">
-                <div class="process-icon"><i data-lucide="message-square"></i></div>
-                <div>
-                    <h4>Confirm</h4>
-                    <p>Receive instant confirmation with your agent details and pickup time.</p>
-                </div>
-            </div>
-            <div class="process-connector"></div>
-            <div class="process-step">
-                <div class="process-icon"><i data-lucide="truck"></i></div>
-                <div>
-                    <h4>Collection</h4>
-                    <p>Verified agent arrives, verifies the waste, and takes it away safely.</p>
-                </div>
-            </div>
-            <div class="process-connector"></div>
-            <div class="process-step">
-                <div class="process-icon"><i data-lucide="recycle"></i></div>
-                <div>
-                    <h4>Eco Disposal</h4>
-                    <p>Waste is sorted, recycled, or disposed of responsibly.</p>
-                </div>
-            </div>
-        </div>
-
         <div class="feature-grid">
             <div class="step-card reveal">
                 <span class="step-num">01</span>
@@ -369,7 +319,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2025 TrashAway. All rights reserved.</p>
+            <p>© 2026 TrashAway. All rights reserved.</p>
             <p>Made with 💚 for Nigeria</p>
         </div>
     </footer>
@@ -441,6 +391,17 @@
                 }
             }
         });
+
+        const heroVideo = document.querySelector('.video-bg');
+        const heroSection = document.querySelector('.hero');
+        if (heroVideo && heroSection) {
+            heroVideo.play().catch(() => {
+                heroSection.classList.add('video-fallback');
+            });
+            heroVideo.addEventListener('error', () => {
+                heroSection.classList.add('video-fallback');
+            });
+        }
     </script>
 </body>
 </html>
